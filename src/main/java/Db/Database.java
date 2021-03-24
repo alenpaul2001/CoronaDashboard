@@ -101,7 +101,9 @@ public class Database {
 
     public static ResultSet queryCountry(Connection db, String country){
        try{
-            PreparedStatement query = db.prepareStatement("SELECT countryname, confirmed, recovered, death from COVIDCHART where countryname = ?;");
+            PreparedStatement query = db.prepareStatement(
+                    "SELECT countryname, confirmed, recovered, death "
+                            + "from COVIDCHART where countryname = ?;");
             query.setString(1, country);
             return query.executeQuery();
         } catch (SQLException ex) {
