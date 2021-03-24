@@ -6,7 +6,6 @@
 package Http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -19,8 +18,10 @@ import java.net.URL;
 public class Request {
     public static Response request(){
         try{
-            URL url = new URL(" https://api.covid19api.com/summary");
-            // URL url = new URL(" http://127.0.0.1:8000");
+            // production url -> public-hosted slow
+            // URL url = new URL(" https://api.covid19api.com/summary");
+            // staging url -> local-hosted fast
+            URL url = new URL(" http://127.0.0.1:8000");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestProperty("accept", "application/json");
             InputStream responseStream = connection.getInputStream();
