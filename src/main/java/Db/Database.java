@@ -46,8 +46,7 @@ public class Database {
             try{
                 countries.forEach((country) -> {
                     insertValue(dbConn, country);
-                }); 
-                
+                });
             } finally {
                 dbConn.close();
             }
@@ -84,10 +83,30 @@ public class Database {
             query.setInt(3, country.totalConfirmed);
             query.setInt(4, country.totalRecovered);
             query.setInt(5, country.totalDeaths);
-            System.out.print(query);
             query.executeUpdate();
         } catch (SQLException ex) {
                 Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
             }
-    }    
+    }
+
+    public static ResultSet queryCountries(Connection db){
+        try{
+            PreparedStatement query = db.prepareStatement("SELECT countryname from COVIDCHART;");
+            return query.executeQuery();
+        } catch (SQLException ex) {
+                Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+                return null;
+            }
+    }
+
+    public static ResultSet queryCountry(Connection db, String country){
+       try{
+            PreparedStatement query = db.prepareStatement("SELECT countryname, confirmed, recovered, death from COVIDCHART where countryname = ?;");
+            query.setString(1, country);
+            return query.executeQuery();
+        } catch (SQLException ex) {
+                Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+                return null;
+            }
+    }
 }
