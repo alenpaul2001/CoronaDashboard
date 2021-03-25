@@ -50,12 +50,15 @@ public class Main extends javax.swing.JFrame {
         recovered_main = new javax.swing.JPanel();
         recovered_text_area = new javax.swing.JPanel();
         recovered_text = new javax.swing.JLabel();
+        text_recovered = new javax.swing.JLabel();
         death_main = new javax.swing.JPanel();
         death_text_area = new javax.swing.JPanel();
         death_text = new javax.swing.JLabel();
+        text_death = new javax.swing.JLabel();
         confirmed_main = new javax.swing.JPanel();
         confirmed_text_area = new javax.swing.JPanel();
         confirmed_text = new javax.swing.JLabel();
+        text_confirmed = new javax.swing.JLabel();
         free_panel = new javax.swing.JPanel();
         information_panel = new javax.swing.JPanel();
         information_text_area = new javax.swing.JLabel();
@@ -94,6 +97,7 @@ public class Main extends javax.swing.JFrame {
         recovered_text_area.setBackground(new java.awt.Color(240, 255, 244));
 
         recovered_text.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        recovered_text.setForeground(new java.awt.Color(56, 161, 105));
         recovered_text.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         recovered_text.setText("0");
         recovered_text.setToolTipText("");
@@ -121,6 +125,12 @@ public class Main extends javax.swing.JFrame {
 
         recovered_main.add(recovered_text_area, java.awt.BorderLayout.PAGE_START);
 
+        text_recovered.setFont(new java.awt.Font("Segoe UI Semibold", 1, 24)); // NOI18N
+        text_recovered.setForeground(new java.awt.Color(56, 161, 105));
+        text_recovered.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        text_recovered.setText("Recovered");
+        recovered_main.add(text_recovered, java.awt.BorderLayout.CENTER);
+
         death_main.setBackground(new java.awt.Color(226, 232, 240));
         death_main.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
         death_main.setPreferredSize(new java.awt.Dimension(200, 150));
@@ -129,6 +139,7 @@ public class Main extends javax.swing.JFrame {
         death_text_area.setBackground(new java.awt.Color(237, 242, 247));
 
         death_text.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        death_text.setForeground(new java.awt.Color(113, 128, 150));
         death_text.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         death_text.setText("0");
         death_text.setToolTipText("");
@@ -156,6 +167,12 @@ public class Main extends javax.swing.JFrame {
 
         death_main.add(death_text_area, java.awt.BorderLayout.PAGE_START);
 
+        text_death.setFont(new java.awt.Font("Segoe UI Semibold", 1, 24)); // NOI18N
+        text_death.setForeground(new java.awt.Color(113, 128, 150));
+        text_death.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        text_death.setText("Deaths");
+        death_main.add(text_death, java.awt.BorderLayout.CENTER);
+
         confirmed_main.setBackground(new java.awt.Color(254, 215, 215));
         confirmed_main.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
         confirmed_main.setPreferredSize(new java.awt.Dimension(200, 150));
@@ -164,6 +181,7 @@ public class Main extends javax.swing.JFrame {
         confirmed_text_area.setBackground(new java.awt.Color(255, 245, 245));
 
         confirmed_text.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        confirmed_text.setForeground(new java.awt.Color(229, 62, 62));
         confirmed_text.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         confirmed_text.setText("0");
         confirmed_text.setToolTipText("");
@@ -180,6 +198,12 @@ public class Main extends javax.swing.JFrame {
         );
 
         confirmed_main.add(confirmed_text_area, java.awt.BorderLayout.PAGE_START);
+
+        text_confirmed.setFont(new java.awt.Font("Segoe UI Semibold", 1, 24)); // NOI18N
+        text_confirmed.setForeground(new java.awt.Color(229, 62, 62));
+        text_confirmed.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        text_confirmed.setText("Confirmed");
+        confirmed_main.add(text_confirmed, java.awt.BorderLayout.CENTER);
 
         free_panel.setPreferredSize(new java.awt.Dimension(840, 280));
 
@@ -325,5 +349,8 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JLabel recovered_text;
     private javax.swing.JPanel recovered_text_area;
     private javax.swing.JPanel side_panel;
+    private javax.swing.JLabel text_confirmed;
+    private javax.swing.JLabel text_death;
+    private javax.swing.JLabel text_recovered;
     // End of variables declaration//GEN-END:variables
 }
