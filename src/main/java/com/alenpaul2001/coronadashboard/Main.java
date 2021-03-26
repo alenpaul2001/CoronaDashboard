@@ -85,6 +85,18 @@ public class Main extends javax.swing.JFrame {
         free_panel = new javax.swing.JPanel();
         information_panel = new javax.swing.JPanel();
         information_text_area = new javax.swing.JLabel();
+        database_panel = new javax.swing.JPanel();
+        side_panel1 = new javax.swing.JPanel();
+        app_icon_area1 = new javax.swing.JPanel();
+        app_icon1 = new javax.swing.JLabel();
+        dashboard_icon_area1 = new javax.swing.JPanel();
+        dashboard_icon1 = new javax.swing.JLabel();
+        database_icon_area1 = new javax.swing.JPanel();
+        database_icon1 = new javax.swing.JLabel();
+        settings_icon_area1 = new javax.swing.JPanel();
+        settings_icon1 = new javax.swing.JLabel();
+        about_icon_area1 = new javax.swing.JPanel();
+        about_icon1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -134,10 +146,10 @@ public class Main extends javax.swing.JFrame {
         dashboard_icon.setPreferredSize(new java.awt.Dimension(100, 60));
         dashboard_icon.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                dashboard_iconMouseExited(evt);
+                dash_panel_homeMouseExited(evt);
             }
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                dashboard_iconMouseEntered(evt);
+                dash_panel_homeMouseEntered(evt);
             }
         });
 
@@ -164,11 +176,14 @@ public class Main extends javax.swing.JFrame {
         database_icon.setToolTipText("");
         database_icon.setPreferredSize(new java.awt.Dimension(100, 60));
         database_icon.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                dash_panel_db_iconMouseClicked(evt);
+            }
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                database_iconMouseExited(evt);
+                dash_panel_db_iconMouseExited(evt);
             }
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                database_iconMouseEntered(evt);
+                dash_panel_db_iconMouseEntered(evt);
             }
         });
 
@@ -197,10 +212,10 @@ public class Main extends javax.swing.JFrame {
         settings_icon.setPreferredSize(new java.awt.Dimension(100, 60));
         settings_icon.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                settings_iconMouseExited(evt);
+                dash_panel_settingMouseExited(evt);
             }
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                settings_iconMouseEntered(evt);
+                dash_panel_settingMouseEntered(evt);
             }
         });
 
@@ -229,10 +244,10 @@ public class Main extends javax.swing.JFrame {
         about_icon.setPreferredSize(new java.awt.Dimension(100, 60));
         about_icon.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                about_iconMouseExited(evt);
+                dash_panel_aboutMouseExited(evt);
             }
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                about_iconMouseEntered(evt);
+                dash_panel_aboutMouseEntered(evt);
             }
         });
 
@@ -461,10 +476,213 @@ public class Main extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(free_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(side_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 0, 0))
         );
 
         getContentPane().add(dashboard_panel, "card2");
+
+        database_panel.setPreferredSize(new java.awt.Dimension(940, 500));
+
+        side_panel1.setBackground(new java.awt.Color(28, 38, 61));
+        side_panel1.setPreferredSize(new java.awt.Dimension(100, 500));
+
+        app_icon_area1.setBackground(new java.awt.Color(28, 38, 61));
+        app_icon_area1.setMinimumSize(new java.awt.Dimension(100, 70));
+
+        app_icon1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        app_icon1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/covid-50x50.png"))); // NOI18N
+        app_icon1.setToolTipText("");
+        app_icon1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        app_icon1.setPreferredSize(new java.awt.Dimension(100, 70));
+
+        javax.swing.GroupLayout app_icon_area1Layout = new javax.swing.GroupLayout(app_icon_area1);
+        app_icon_area1.setLayout(app_icon_area1Layout);
+        app_icon_area1Layout.setHorizontalGroup(
+            app_icon_area1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(app_icon_area1Layout.createSequentialGroup()
+                .addComponent(app_icon1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        app_icon_area1Layout.setVerticalGroup(
+            app_icon_area1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(app_icon_area1Layout.createSequentialGroup()
+                .addComponent(app_icon1, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        dashboard_icon_area1.setBackground(new java.awt.Color(28, 38, 61));
+
+        dashboard_icon1.setForeground(new java.awt.Color(28, 38, 61));
+        dashboard_icon1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        dashboard_icon1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons8-home-24.png"))); // NOI18N
+        dashboard_icon1.setToolTipText("");
+        dashboard_icon1.setPreferredSize(new java.awt.Dimension(100, 60));
+        dashboard_icon1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                db_panel_homeMouseClicked(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                db_panel_homeMouseExited(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                db_panel_homeMouseEntered(evt);
+            }
+        });
+
+        javax.swing.GroupLayout dashboard_icon_area1Layout = new javax.swing.GroupLayout(dashboard_icon_area1);
+        dashboard_icon_area1.setLayout(dashboard_icon_area1Layout);
+        dashboard_icon_area1Layout.setHorizontalGroup(
+            dashboard_icon_area1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(dashboard_icon_area1Layout.createSequentialGroup()
+                .addComponent(dashboard_icon1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        dashboard_icon_area1Layout.setVerticalGroup(
+            dashboard_icon_area1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(dashboard_icon_area1Layout.createSequentialGroup()
+                .addComponent(dashboard_icon1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        database_icon_area1.setBackground(new java.awt.Color(39, 49, 70));
+
+        database_icon1.setForeground(new java.awt.Color(39, 49, 70));
+        database_icon1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        database_icon1.setIcon(new javax.swing.ImageIcon("/home/stark/Desktop/creations/piechart-30x30.png")); // NOI18N
+        database_icon1.setToolTipText("");
+        database_icon1.setPreferredSize(new java.awt.Dimension(100, 60));
+        database_icon1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                db_panel_dbMouseExited(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                db_panel_dbMouseEntered(evt);
+            }
+        });
+
+        javax.swing.GroupLayout database_icon_area1Layout = new javax.swing.GroupLayout(database_icon_area1);
+        database_icon_area1.setLayout(database_icon_area1Layout);
+        database_icon_area1Layout.setHorizontalGroup(
+            database_icon_area1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, database_icon_area1Layout.createSequentialGroup()
+                .addComponent(database_icon1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        database_icon_area1Layout.setVerticalGroup(
+            database_icon_area1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(database_icon_area1Layout.createSequentialGroup()
+                .addComponent(database_icon1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        settings_icon_area1.setBackground(new java.awt.Color(28, 38, 61));
+        settings_icon_area1.setPreferredSize(new java.awt.Dimension(100, 60));
+
+        settings_icon1.setForeground(new java.awt.Color(28, 38, 61));
+        settings_icon1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        settings_icon1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons8-settings-24.png"))); // NOI18N
+        settings_icon1.setToolTipText("");
+        settings_icon1.setPreferredSize(new java.awt.Dimension(100, 60));
+        settings_icon1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                db_panel_settingsMouseExited(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                db_panel_settingsMouseEntered(evt);
+            }
+        });
+
+        javax.swing.GroupLayout settings_icon_area1Layout = new javax.swing.GroupLayout(settings_icon_area1);
+        settings_icon_area1.setLayout(settings_icon_area1Layout);
+        settings_icon_area1Layout.setHorizontalGroup(
+            settings_icon_area1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, settings_icon_area1Layout.createSequentialGroup()
+                .addComponent(settings_icon1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        settings_icon_area1Layout.setVerticalGroup(
+            settings_icon_area1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(settings_icon_area1Layout.createSequentialGroup()
+                .addComponent(settings_icon1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        about_icon_area1.setBackground(new java.awt.Color(28, 38, 61));
+        about_icon_area1.setPreferredSize(new java.awt.Dimension(100, 60));
+
+        about_icon1.setForeground(new java.awt.Color(28, 38, 61));
+        about_icon1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        about_icon1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/about-icon31.png"))); // NOI18N
+        about_icon1.setToolTipText("null");
+        about_icon1.setPreferredSize(new java.awt.Dimension(100, 60));
+        about_icon1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                db_panel_aboutMouseExited(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                db_panel_aboutMouseEntered(evt);
+            }
+        });
+
+        javax.swing.GroupLayout about_icon_area1Layout = new javax.swing.GroupLayout(about_icon_area1);
+        about_icon_area1.setLayout(about_icon_area1Layout);
+        about_icon_area1Layout.setHorizontalGroup(
+            about_icon_area1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, about_icon_area1Layout.createSequentialGroup()
+                .addComponent(about_icon1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        about_icon_area1Layout.setVerticalGroup(
+            about_icon_area1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(about_icon_area1Layout.createSequentialGroup()
+                .addComponent(about_icon1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout side_panel1Layout = new javax.swing.GroupLayout(side_panel1);
+        side_panel1.setLayout(side_panel1Layout);
+        side_panel1Layout.setHorizontalGroup(
+            side_panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(side_panel1Layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addGroup(side_panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(app_icon_area1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(dashboard_icon_area1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(database_icon_area1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(settings_icon_area1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(about_icon_area1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+        );
+        side_panel1Layout.setVerticalGroup(
+            side_panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(side_panel1Layout.createSequentialGroup()
+                .addComponent(app_icon_area1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(dashboard_icon_area1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(database_icon_area1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(settings_icon_area1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(about_icon_area1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 166, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout database_panelLayout = new javax.swing.GroupLayout(database_panel);
+        database_panel.setLayout(database_panelLayout);
+        database_panelLayout.setHorizontalGroup(
+            database_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(database_panelLayout.createSequentialGroup()
+                .addComponent(side_panel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 840, Short.MAX_VALUE))
+        );
+        database_panelLayout.setVerticalGroup(
+            database_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(database_panelLayout.createSequentialGroup()
+                .addComponent(side_panel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        getContentPane().add(database_panel, "card3");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -489,37 +707,80 @@ public class Main extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_formWindowOpened
 
-    private void dashboard_iconMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashboard_iconMouseEntered
+    private void dash_panel_homeMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dash_panel_homeMouseEntered
         HoverAnimation(false, evt);
-    }//GEN-LAST:event_dashboard_iconMouseEntered
+    }//GEN-LAST:event_dash_panel_homeMouseEntered
 
-    private void dashboard_iconMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashboard_iconMouseExited
+    private void dash_panel_homeMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dash_panel_homeMouseExited
        HoverAnimation(true, evt);
-    }//GEN-LAST:event_dashboard_iconMouseExited
+    }//GEN-LAST:event_dash_panel_homeMouseExited
 
-    private void database_iconMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_database_iconMouseEntered
+    private void dash_panel_db_iconMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dash_panel_db_iconMouseEntered
         HoverAnimation(false, evt);
-    }//GEN-LAST:event_database_iconMouseEntered
+    }//GEN-LAST:event_dash_panel_db_iconMouseEntered
 
-    private void database_iconMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_database_iconMouseExited
+    private void dash_panel_db_iconMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dash_panel_db_iconMouseExited
         HoverAnimation(true, evt);
-    }//GEN-LAST:event_database_iconMouseExited
+    }//GEN-LAST:event_dash_panel_db_iconMouseExited
 
-    private void settings_iconMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_settings_iconMouseEntered
+    private void dash_panel_settingMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dash_panel_settingMouseEntered
         HoverAnimation(false, evt);
-    }//GEN-LAST:event_settings_iconMouseEntered
+    }//GEN-LAST:event_dash_panel_settingMouseEntered
 
-    private void settings_iconMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_settings_iconMouseExited
+    private void dash_panel_settingMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dash_panel_settingMouseExited
         HoverAnimation(true, evt);
-    }//GEN-LAST:event_settings_iconMouseExited
+    }//GEN-LAST:event_dash_panel_settingMouseExited
 
-    private void about_iconMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_about_iconMouseEntered
+    private void dash_panel_aboutMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dash_panel_aboutMouseEntered
         HoverAnimation(false, evt);
-    }//GEN-LAST:event_about_iconMouseEntered
+    }//GEN-LAST:event_dash_panel_aboutMouseEntered
 
-    private void about_iconMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_about_iconMouseExited
+    private void dash_panel_aboutMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dash_panel_aboutMouseExited
         HoverAnimation(true, evt);
-    }//GEN-LAST:event_about_iconMouseExited
+    }//GEN-LAST:event_dash_panel_aboutMouseExited
+
+    private void db_panel_homeMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_db_panel_homeMouseExited
+        HoverAnimation(true, evt);
+    }//GEN-LAST:event_db_panel_homeMouseExited
+
+    private void db_panel_homeMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_db_panel_homeMouseEntered
+        HoverAnimation(false, evt);
+    }//GEN-LAST:event_db_panel_homeMouseEntered
+
+    private void db_panel_dbMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_db_panel_dbMouseExited
+        HoverAnimation(true, evt);
+    }//GEN-LAST:event_db_panel_dbMouseExited
+
+    private void db_panel_dbMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_db_panel_dbMouseEntered
+        HoverAnimation(false, evt);
+    }//GEN-LAST:event_db_panel_dbMouseEntered
+
+    private void db_panel_settingsMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_db_panel_settingsMouseExited
+        HoverAnimation(true, evt);
+    }//GEN-LAST:event_db_panel_settingsMouseExited
+
+    private void db_panel_settingsMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_db_panel_settingsMouseEntered
+        HoverAnimation(false, evt);
+    }//GEN-LAST:event_db_panel_settingsMouseEntered
+
+    private void db_panel_aboutMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_db_panel_aboutMouseExited
+        HoverAnimation(true, evt);
+    }//GEN-LAST:event_db_panel_aboutMouseExited
+
+    private void db_panel_aboutMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_db_panel_aboutMouseEntered
+        HoverAnimation(false, evt);
+    }//GEN-LAST:event_db_panel_aboutMouseEntered
+
+    private void dash_panel_db_iconMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dash_panel_db_iconMouseClicked
+        dashboard_panel.setVisible(false);
+        database_panel.setVisible(true);
+        this.repaint();
+    }//GEN-LAST:event_dash_panel_db_iconMouseClicked
+
+    private void db_panel_homeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_db_panel_homeMouseClicked
+        database_panel.setVisible(false);
+        dashboard_panel.setVisible(true);
+    }//GEN-LAST:event_db_panel_homeMouseClicked
 
     /**
      * @param args the command line arguments
@@ -558,17 +819,26 @@ public class Main extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel about_icon;
+    private javax.swing.JLabel about_icon1;
     private javax.swing.JPanel about_icon_area;
+    private javax.swing.JPanel about_icon_area1;
     private javax.swing.JLabel app_icon;
+    private javax.swing.JLabel app_icon1;
     private javax.swing.JPanel app_icon_area;
+    private javax.swing.JPanel app_icon_area1;
     private javax.swing.JPanel confirmed_main;
     private javax.swing.JLabel confirmed_text;
     private javax.swing.JPanel confirmed_text_area;
     private javax.swing.JLabel dashboard_icon;
+    private javax.swing.JLabel dashboard_icon1;
     private javax.swing.JPanel dashboard_icon_area;
+    private javax.swing.JPanel dashboard_icon_area1;
     private javax.swing.JPanel dashboard_panel;
     private javax.swing.JLabel database_icon;
+    private javax.swing.JLabel database_icon1;
     private javax.swing.JPanel database_icon_area;
+    private javax.swing.JPanel database_icon_area1;
+    private javax.swing.JPanel database_panel;
     private javax.swing.JPanel death_main;
     private javax.swing.JLabel death_text;
     private javax.swing.JPanel death_text_area;
@@ -579,8 +849,11 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JLabel recovered_text;
     private javax.swing.JPanel recovered_text_area;
     private javax.swing.JLabel settings_icon;
+    private javax.swing.JLabel settings_icon1;
     private javax.swing.JPanel settings_icon_area;
+    private javax.swing.JPanel settings_icon_area1;
     private javax.swing.JPanel side_panel;
+    private javax.swing.JPanel side_panel1;
     private javax.swing.JLabel text_confirmed;
     private javax.swing.JLabel text_death;
     private javax.swing.JLabel text_recovered;
