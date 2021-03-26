@@ -17,11 +17,10 @@
 package com.alenpaul2001.coronadashboard;
 
 import Db.Database;
+import java.awt.Color;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -38,6 +37,18 @@ public class Main extends javax.swing.JFrame {
         initComponents();
     }
 
+    /**
+     * Hover animation to change color when mouse entered 
+     */
+    public static void HoverAnimation(boolean exit, java.awt.event.MouseEvent evt){
+        javax.swing.JLabel lbl = (javax.swing.JLabel) evt.getComponent();
+        javax.swing.JPanel pnl = (javax.swing.JPanel) lbl.getParent();
+        // if else onliner; basically this means if exit is true then use one color else another color
+        java.awt.Color color = ((exit == true) ? lbl.getForeground(): new Color(88, 104, 220));
+        // https://gist.github.com/TabsPH/4057899
+        pnl.setBackground(color);
+        pnl.repaint();
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -116,10 +127,19 @@ public class Main extends javax.swing.JFrame {
 
         dashboard_icon_area.setBackground(new java.awt.Color(39, 49, 70));
 
+        dashboard_icon.setForeground(new java.awt.Color(39, 49, 70));
         dashboard_icon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         dashboard_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons8-home-24.png"))); // NOI18N
         dashboard_icon.setToolTipText("");
         dashboard_icon.setPreferredSize(new java.awt.Dimension(100, 60));
+        dashboard_icon.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                dashboard_iconMouseExited(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                dashboard_iconMouseEntered(evt);
+            }
+        });
 
         javax.swing.GroupLayout dashboard_icon_areaLayout = new javax.swing.GroupLayout(dashboard_icon_area);
         dashboard_icon_area.setLayout(dashboard_icon_areaLayout);
@@ -138,10 +158,19 @@ public class Main extends javax.swing.JFrame {
 
         database_icon_area.setBackground(new java.awt.Color(28, 38, 61));
 
+        database_icon.setForeground(new java.awt.Color(28, 38, 61));
         database_icon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         database_icon.setIcon(new javax.swing.ImageIcon("/home/stark/Desktop/creations/piechart-30x30.png")); // NOI18N
         database_icon.setToolTipText("");
         database_icon.setPreferredSize(new java.awt.Dimension(100, 60));
+        database_icon.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                database_iconMouseExited(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                database_iconMouseEntered(evt);
+            }
+        });
 
         javax.swing.GroupLayout database_icon_areaLayout = new javax.swing.GroupLayout(database_icon_area);
         database_icon_area.setLayout(database_icon_areaLayout);
@@ -161,11 +190,19 @@ public class Main extends javax.swing.JFrame {
         settings_icon_area.setBackground(new java.awt.Color(28, 38, 61));
         settings_icon_area.setPreferredSize(new java.awt.Dimension(100, 60));
 
-        settings_icon.setForeground(new java.awt.Color(113, 128, 150));
+        settings_icon.setForeground(new java.awt.Color(28, 38, 61));
         settings_icon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         settings_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons8-settings-24.png"))); // NOI18N
         settings_icon.setToolTipText("");
         settings_icon.setPreferredSize(new java.awt.Dimension(100, 60));
+        settings_icon.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                settings_iconMouseExited(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                settings_iconMouseEntered(evt);
+            }
+        });
 
         javax.swing.GroupLayout settings_icon_areaLayout = new javax.swing.GroupLayout(settings_icon_area);
         settings_icon_area.setLayout(settings_icon_areaLayout);
@@ -185,10 +222,19 @@ public class Main extends javax.swing.JFrame {
         about_icon_area.setBackground(new java.awt.Color(28, 38, 61));
         about_icon_area.setPreferredSize(new java.awt.Dimension(100, 60));
 
+        about_icon.setForeground(new java.awt.Color(28, 38, 61));
         about_icon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         about_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/about-icon31.png"))); // NOI18N
-        about_icon.setToolTipText("");
+        about_icon.setToolTipText("null");
         about_icon.setPreferredSize(new java.awt.Dimension(100, 60));
+        about_icon.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                about_iconMouseExited(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                about_iconMouseEntered(evt);
+            }
+        });
 
         javax.swing.GroupLayout about_icon_areaLayout = new javax.swing.GroupLayout(about_icon_area);
         about_icon_area.setLayout(about_icon_areaLayout);
@@ -442,6 +488,38 @@ public class Main extends javax.swing.JFrame {
             information_panel.repaint();
         }
     }//GEN-LAST:event_formWindowOpened
+
+    private void dashboard_iconMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashboard_iconMouseEntered
+        HoverAnimation(false, evt);
+    }//GEN-LAST:event_dashboard_iconMouseEntered
+
+    private void dashboard_iconMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashboard_iconMouseExited
+       HoverAnimation(true, evt);
+    }//GEN-LAST:event_dashboard_iconMouseExited
+
+    private void database_iconMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_database_iconMouseEntered
+        HoverAnimation(false, evt);
+    }//GEN-LAST:event_database_iconMouseEntered
+
+    private void database_iconMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_database_iconMouseExited
+        HoverAnimation(true, evt);
+    }//GEN-LAST:event_database_iconMouseExited
+
+    private void settings_iconMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_settings_iconMouseEntered
+        HoverAnimation(false, evt);
+    }//GEN-LAST:event_settings_iconMouseEntered
+
+    private void settings_iconMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_settings_iconMouseExited
+        HoverAnimation(true, evt);
+    }//GEN-LAST:event_settings_iconMouseExited
+
+    private void about_iconMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_about_iconMouseEntered
+        HoverAnimation(false, evt);
+    }//GEN-LAST:event_about_iconMouseEntered
+
+    private void about_iconMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_about_iconMouseExited
+        HoverAnimation(true, evt);
+    }//GEN-LAST:event_about_iconMouseExited
 
     /**
      * @param args the command line arguments
