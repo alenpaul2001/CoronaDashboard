@@ -30,13 +30,8 @@ public class Database {
     static String dbURI = "jdbc:mysql://localhost:3306/covid";
     static String dbUser = "corona";
     static String dbPass = "corona";
-    public static Connection getConnection(){
-        try{
+    public static Connection getConnection() throws SQLException{
             return DriverManager.getConnection(dbURI, dbUser, dbPass);
-        } catch (SQLException ex) {
-                Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
-                return null;
-            }
     }
     
     public static void updateCountries(List<Scaffold> countries){
@@ -59,7 +54,7 @@ public class Database {
         try{
             PreparedStatement query = db.prepareStatement(
                     "CREATE TABLE IF NOT EXISTS COVIDCHART "
-                            + "(countryname VARCHAR(25), "
+                            + "(countryname VARCHAR(50), "
                             + "countrycode CHAR(2) UNIQUE, "
                             + "confirmed INT, recovered INT, "
                             + "death INT)");
@@ -91,7 +86,7 @@ public class Database {
 
     public static ResultSet queryCountries(Connection db){
         try{
-            PreparedStatement query = db.prepareStatement("SELECT countryname from COVIDCHART;");
+            PreparedStatement query = db.prepareStatement("SELECT * from COVIDCHART;");
             return query.executeQuery();
         } catch (SQLException ex) {
                 Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);

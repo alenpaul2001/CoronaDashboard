@@ -21,6 +21,7 @@ import java.awt.Color;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -33,22 +34,93 @@ public class Main extends javax.swing.JFrame {
      */
     public Main() {
         // a = new javax.swing.ImageIcon(getClass().getRe);
-        System.out.println(System.getProperty("user.dir"));
         initComponents();
     }
 
     /**
-     * Hover animation to change color when mouse entered 
+     * Hover animation to change color when mouse entered
      */
-    public static void HoverAnimation(boolean exit, java.awt.event.MouseEvent evt){
+    public void hoverAnimation(boolean exit, java.awt.event.MouseEvent evt, java.awt.Color c) {
         javax.swing.JLabel lbl = (javax.swing.JLabel) evt.getComponent();
         javax.swing.JPanel pnl = (javax.swing.JPanel) lbl.getParent();
-        // if else onliner; basically this means if exit is true then use one color else another color
-        java.awt.Color color = ((exit == true) ? lbl.getForeground(): new Color(88, 104, 220));
+        // if else onliner; basically this means if exit is true then use the foreground color else color
+        java.awt.Color color = ((exit == true) ? lbl.getForeground() : c);
         // https://gist.github.com/TabsPH/4057899
         pnl.setBackground(color);
-        pnl.repaint();
     }
+
+    // this function literraly adds hover animation to every icons
+    public void addMouseEvent() {
+        // for refresh icon
+        java.awt.event.MouseAdapter refresh_adapter = new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                hoverAnimation(false, evt, new java.awt.Color(3, 218, 198));
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                hoverAnimation(true, evt, null);
+            }
+
+            public void mouseClicked(java.awt.event.MouseEvent evt){
+                System.out.println("clicked");
+            }
+        };
+        home_refresh_icon.addMouseListener(refresh_adapter);
+        db_refresh_icon.addMouseListener(refresh_adapter);
+        for (javax.swing.JLabel label : new javax.swing.JLabel[]{
+            home_dashboard_icon,
+            home_settings_icon,
+            home_database_icon,
+            home_about_icon,
+            db_dashboard_icon,
+            db_database_icon,
+            db_settings_icon,
+            db_about_icon,
+            stg_dashboard_icon,
+            stg_database_icon,
+            stg_settings_icon,
+            stg_about_icon}) {
+            label.addMouseListener(new java.awt.event.MouseAdapter() {
+                public void mouseEntered(java.awt.event.MouseEvent evt) {
+                    hoverAnimation(false, evt, new Color(88, 104, 220));
+                }
+
+                public void mouseExited(java.awt.event.MouseEvent evt) {
+                    hoverAnimation(true, evt, null);
+                }
+            });
+        }
+    }
+
+    public void loadDashboard(Connection db) throws SQLException {
+        ResultSet result = Database.queryCountry(db, "Global");
+        result.next();
+        confirmed_text.setText(String.valueOf(result.getInt("confirmed")));
+        recovered_text.setText(String.valueOf(result.getInt("recovered")));
+        death_text.setText(String.valueOf(result.getInt("death")));
+    }
+
+    public void loadTable(Connection db) throws SQLException {
+        ResultSet result = Database.queryCountries(db);
+        DefaultTableModel model = (DefaultTableModel) db_table_panel.getModel();
+        while (result.next()) {
+            model.addRow(new Object[]{
+                result.getString("countryname"),
+                result.getString("countrycode"),
+                result.getInt("confirmed"),
+                result.getInt("recovered"),
+                result.getInt("death")
+            });
+        }
+    }
+
+    public void setInformation(java.awt.Color color, String message) {
+        home_information_panel.setBackground(color);
+        db_information_panel.setBackground(color);
+        information_text_area.setText(message);
+        db_information_text_area.setText(message);
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -59,44 +131,65 @@ public class Main extends javax.swing.JFrame {
     private void initComponents() {
 
         dashboard_panel = new javax.swing.JPanel();
-        side_panel = new javax.swing.JPanel();
-        app_icon_area = new javax.swing.JPanel();
-        app_icon = new javax.swing.JLabel();
-        dashboard_icon_area = new javax.swing.JPanel();
-        dashboard_icon = new javax.swing.JLabel();
-        database_icon_area = new javax.swing.JPanel();
-        database_icon = new javax.swing.JLabel();
-        settings_icon_area = new javax.swing.JPanel();
-        settings_icon = new javax.swing.JLabel();
-        about_icon_area = new javax.swing.JPanel();
-        about_icon = new javax.swing.JLabel();
-        recovered_main = new javax.swing.JPanel();
-        recovered_text_area = new javax.swing.JPanel();
+        home_side_panel = new javax.swing.JPanel();
+        home_app_icon_area = new javax.swing.JPanel();
+        home_app_icon = new javax.swing.JLabel();
+        home_dashboard_icon_area = new javax.swing.JPanel();
+        home_dashboard_icon = new javax.swing.JLabel();
+        home_database_icon_area = new javax.swing.JPanel();
+        home_database_icon = new javax.swing.JLabel();
+        home_settings_icon_area = new javax.swing.JPanel();
+        home_settings_icon = new javax.swing.JLabel();
+        home_about_icon_area = new javax.swing.JPanel();
+        home_about_icon = new javax.swing.JLabel();
+        home_refresh_icon_area = new javax.swing.JPanel();
+        home_refresh_icon = new javax.swing.JLabel();
+        home_recovered_main = new javax.swing.JPanel();
+        home_recovered_text_area = new javax.swing.JPanel();
         recovered_text = new javax.swing.JLabel();
-        text_recovered = new javax.swing.JLabel();
-        death_main = new javax.swing.JPanel();
-        death_text_area = new javax.swing.JPanel();
+        home_text_recovered = new javax.swing.JLabel();
+        home_death_main = new javax.swing.JPanel();
+        home_death_text_area = new javax.swing.JPanel();
         death_text = new javax.swing.JLabel();
-        text_death = new javax.swing.JLabel();
-        confirmed_main = new javax.swing.JPanel();
-        confirmed_text_area = new javax.swing.JPanel();
+        home_text_death = new javax.swing.JLabel();
+        home_confirmed_main = new javax.swing.JPanel();
+        home_confirmed_text_area = new javax.swing.JPanel();
         confirmed_text = new javax.swing.JLabel();
-        text_confirmed = new javax.swing.JLabel();
-        free_panel = new javax.swing.JPanel();
-        information_panel = new javax.swing.JPanel();
+        home_text_confirmed = new javax.swing.JLabel();
+        home_free_panel = new javax.swing.JPanel();
+        home_information_panel = new javax.swing.JPanel();
         information_text_area = new javax.swing.JLabel();
         database_panel = new javax.swing.JPanel();
-        side_panel1 = new javax.swing.JPanel();
-        app_icon_area1 = new javax.swing.JPanel();
-        app_icon1 = new javax.swing.JLabel();
-        dashboard_icon_area1 = new javax.swing.JPanel();
-        dashboard_icon1 = new javax.swing.JLabel();
-        database_icon_area1 = new javax.swing.JPanel();
-        database_icon1 = new javax.swing.JLabel();
-        settings_icon_area1 = new javax.swing.JPanel();
-        settings_icon1 = new javax.swing.JLabel();
-        about_icon_area1 = new javax.swing.JPanel();
-        about_icon1 = new javax.swing.JLabel();
+        db_side_panel = new javax.swing.JPanel();
+        db_app_icon_area = new javax.swing.JPanel();
+        db_app_icon = new javax.swing.JLabel();
+        db_dashboard_icon_area = new javax.swing.JPanel();
+        db_dashboard_icon = new javax.swing.JLabel();
+        db_database_icon_area = new javax.swing.JPanel();
+        db_database_icon = new javax.swing.JLabel();
+        db_settings_icon_area = new javax.swing.JPanel();
+        db_settings_icon = new javax.swing.JLabel();
+        db_about_icon_area = new javax.swing.JPanel();
+        db_about_icon = new javax.swing.JLabel();
+        db_refresh_icon_area = new javax.swing.JPanel();
+        db_refresh_icon = new javax.swing.JLabel();
+        db_free_panel = new javax.swing.JPanel();
+        db_information_panel = new javax.swing.JPanel();
+        db_information_text_area = new javax.swing.JLabel();
+        db_table_scrollpane = new javax.swing.JScrollPane();
+        db_table_panel = new javax.swing.JTable();
+        settings_panel = new javax.swing.JPanel();
+        stg_side_panel = new javax.swing.JPanel();
+        stg_app_icon_area = new javax.swing.JPanel();
+        stg_app_icon = new javax.swing.JLabel();
+        stg_dashboard_icon_area = new javax.swing.JPanel();
+        stg_dashboard_icon = new javax.swing.JLabel();
+        stg_database_icon_area = new javax.swing.JPanel();
+        stg_database_icon = new javax.swing.JLabel();
+        stg_settings_icon_area = new javax.swing.JPanel();
+        stg_settings_icon = new javax.swing.JLabel();
+        stg_about_icon_area = new javax.swing.JPanel();
+        stg_about_icon = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -107,199 +200,209 @@ public class Main extends javax.swing.JFrame {
         });
         getContentPane().setLayout(new java.awt.CardLayout());
 
+        dashboard_panel.setBackground(new java.awt.Color(238, 238, 237));
         dashboard_panel.setPreferredSize(new java.awt.Dimension(940, 500));
 
-        side_panel.setBackground(new java.awt.Color(28, 38, 61));
-        side_panel.setPreferredSize(new java.awt.Dimension(100, 500));
+        home_side_panel.setBackground(new java.awt.Color(28, 38, 61));
+        home_side_panel.setPreferredSize(new java.awt.Dimension(100, 500));
 
-        app_icon_area.setBackground(new java.awt.Color(28, 38, 61));
-        app_icon_area.setMinimumSize(new java.awt.Dimension(100, 70));
-        app_icon_area.setPreferredSize(new java.awt.Dimension(100, 70));
+        home_app_icon_area.setBackground(new java.awt.Color(28, 38, 61));
+        home_app_icon_area.setMinimumSize(new java.awt.Dimension(100, 70));
+        home_app_icon_area.setPreferredSize(new java.awt.Dimension(100, 70));
 
-        app_icon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        app_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/covid-50x50.png"))); // NOI18N
-        app_icon.setToolTipText("");
-        app_icon.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        app_icon.setPreferredSize(new java.awt.Dimension(100, 70));
+        home_app_icon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        home_app_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/covid-50x50.png"))); // NOI18N
+        home_app_icon.setToolTipText("");
+        home_app_icon.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        home_app_icon.setPreferredSize(new java.awt.Dimension(100, 70));
 
-        javax.swing.GroupLayout app_icon_areaLayout = new javax.swing.GroupLayout(app_icon_area);
-        app_icon_area.setLayout(app_icon_areaLayout);
-        app_icon_areaLayout.setHorizontalGroup(
-            app_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(app_icon_areaLayout.createSequentialGroup()
-                .addComponent(app_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+        javax.swing.GroupLayout home_app_icon_areaLayout = new javax.swing.GroupLayout(home_app_icon_area);
+        home_app_icon_area.setLayout(home_app_icon_areaLayout);
+        home_app_icon_areaLayout.setHorizontalGroup(
+            home_app_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(home_app_icon_areaLayout.createSequentialGroup()
+                .addComponent(home_app_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
-        app_icon_areaLayout.setVerticalGroup(
-            app_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(app_icon_areaLayout.createSequentialGroup()
-                .addComponent(app_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
-
-        dashboard_icon_area.setBackground(new java.awt.Color(39, 49, 70));
-
-        dashboard_icon.setForeground(new java.awt.Color(39, 49, 70));
-        dashboard_icon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        dashboard_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons8-home-24.png"))); // NOI18N
-        dashboard_icon.setToolTipText("");
-        dashboard_icon.setPreferredSize(new java.awt.Dimension(100, 60));
-        dashboard_icon.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                dash_panel_homeMouseExited(evt);
-            }
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                dash_panel_homeMouseEntered(evt);
-            }
-        });
-
-        javax.swing.GroupLayout dashboard_icon_areaLayout = new javax.swing.GroupLayout(dashboard_icon_area);
-        dashboard_icon_area.setLayout(dashboard_icon_areaLayout);
-        dashboard_icon_areaLayout.setHorizontalGroup(
-            dashboard_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(dashboard_icon_areaLayout.createSequentialGroup()
-                .addComponent(dashboard_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
-        dashboard_icon_areaLayout.setVerticalGroup(
-            dashboard_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(dashboard_icon_areaLayout.createSequentialGroup()
-                .addComponent(dashboard_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+        home_app_icon_areaLayout.setVerticalGroup(
+            home_app_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(home_app_icon_areaLayout.createSequentialGroup()
+                .addComponent(home_app_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
-        database_icon_area.setBackground(new java.awt.Color(28, 38, 61));
+        home_dashboard_icon_area.setBackground(new java.awt.Color(39, 49, 70));
 
-        database_icon.setForeground(new java.awt.Color(28, 38, 61));
-        database_icon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        database_icon.setIcon(new javax.swing.ImageIcon("/home/stark/Desktop/creations/piechart-30x30.png")); // NOI18N
-        database_icon.setToolTipText("");
-        database_icon.setPreferredSize(new java.awt.Dimension(100, 60));
-        database_icon.addMouseListener(new java.awt.event.MouseAdapter() {
+        home_dashboard_icon.setForeground(new java.awt.Color(39, 49, 70));
+        home_dashboard_icon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        home_dashboard_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons8-home-24.png"))); // NOI18N
+        home_dashboard_icon.setToolTipText("");
+        home_dashboard_icon.setPreferredSize(new java.awt.Dimension(100, 60));
+
+        javax.swing.GroupLayout home_dashboard_icon_areaLayout = new javax.swing.GroupLayout(home_dashboard_icon_area);
+        home_dashboard_icon_area.setLayout(home_dashboard_icon_areaLayout);
+        home_dashboard_icon_areaLayout.setHorizontalGroup(
+            home_dashboard_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(home_dashboard_icon_areaLayout.createSequentialGroup()
+                .addComponent(home_dashboard_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        home_dashboard_icon_areaLayout.setVerticalGroup(
+            home_dashboard_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(home_dashboard_icon_areaLayout.createSequentialGroup()
+                .addComponent(home_dashboard_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        home_database_icon_area.setBackground(new java.awt.Color(28, 38, 61));
+
+        home_database_icon.setForeground(new java.awt.Color(28, 38, 61));
+        home_database_icon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        home_database_icon.setIcon(new javax.swing.ImageIcon("/home/stark/Desktop/creations/piechart-30x30.png")); // NOI18N
+        home_database_icon.setToolTipText("");
+        home_database_icon.setPreferredSize(new java.awt.Dimension(100, 60));
+        home_database_icon.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                dash_panel_db_iconMouseClicked(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                dash_panel_db_iconMouseExited(evt);
-            }
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                dash_panel_db_iconMouseEntered(evt);
+                home_database_iconMouseClicked(evt);
             }
         });
 
-        javax.swing.GroupLayout database_icon_areaLayout = new javax.swing.GroupLayout(database_icon_area);
-        database_icon_area.setLayout(database_icon_areaLayout);
-        database_icon_areaLayout.setHorizontalGroup(
-            database_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, database_icon_areaLayout.createSequentialGroup()
-                .addComponent(database_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+        javax.swing.GroupLayout home_database_icon_areaLayout = new javax.swing.GroupLayout(home_database_icon_area);
+        home_database_icon_area.setLayout(home_database_icon_areaLayout);
+        home_database_icon_areaLayout.setHorizontalGroup(
+            home_database_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, home_database_icon_areaLayout.createSequentialGroup()
+                .addComponent(home_database_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
-        database_icon_areaLayout.setVerticalGroup(
-            database_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(database_icon_areaLayout.createSequentialGroup()
-                .addComponent(database_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+        home_database_icon_areaLayout.setVerticalGroup(
+            home_database_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(home_database_icon_areaLayout.createSequentialGroup()
+                .addComponent(home_database_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
-        settings_icon_area.setBackground(new java.awt.Color(28, 38, 61));
-        settings_icon_area.setPreferredSize(new java.awt.Dimension(100, 60));
+        home_settings_icon_area.setBackground(new java.awt.Color(28, 38, 61));
+        home_settings_icon_area.setPreferredSize(new java.awt.Dimension(100, 60));
 
-        settings_icon.setForeground(new java.awt.Color(28, 38, 61));
-        settings_icon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        settings_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons8-settings-24.png"))); // NOI18N
-        settings_icon.setToolTipText("");
-        settings_icon.setPreferredSize(new java.awt.Dimension(100, 60));
-        settings_icon.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                dash_panel_settingMouseExited(evt);
-            }
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                dash_panel_settingMouseEntered(evt);
+        home_settings_icon.setForeground(new java.awt.Color(28, 38, 61));
+        home_settings_icon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        home_settings_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons8-settings-24.png"))); // NOI18N
+        home_settings_icon.setToolTipText("");
+        home_settings_icon.setPreferredSize(new java.awt.Dimension(100, 60));
+        home_settings_icon.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                home_settings_iconMouseClicked(evt);
             }
         });
 
-        javax.swing.GroupLayout settings_icon_areaLayout = new javax.swing.GroupLayout(settings_icon_area);
-        settings_icon_area.setLayout(settings_icon_areaLayout);
-        settings_icon_areaLayout.setHorizontalGroup(
-            settings_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, settings_icon_areaLayout.createSequentialGroup()
-                .addComponent(settings_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+        javax.swing.GroupLayout home_settings_icon_areaLayout = new javax.swing.GroupLayout(home_settings_icon_area);
+        home_settings_icon_area.setLayout(home_settings_icon_areaLayout);
+        home_settings_icon_areaLayout.setHorizontalGroup(
+            home_settings_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, home_settings_icon_areaLayout.createSequentialGroup()
+                .addComponent(home_settings_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
-        settings_icon_areaLayout.setVerticalGroup(
-            settings_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(settings_icon_areaLayout.createSequentialGroup()
-                .addComponent(settings_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+        home_settings_icon_areaLayout.setVerticalGroup(
+            home_settings_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(home_settings_icon_areaLayout.createSequentialGroup()
+                .addComponent(home_settings_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
-        about_icon_area.setBackground(new java.awt.Color(28, 38, 61));
-        about_icon_area.setPreferredSize(new java.awt.Dimension(100, 60));
+        home_about_icon_area.setBackground(new java.awt.Color(28, 38, 61));
+        home_about_icon_area.setPreferredSize(new java.awt.Dimension(100, 60));
 
-        about_icon.setForeground(new java.awt.Color(28, 38, 61));
-        about_icon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        about_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/about-icon31.png"))); // NOI18N
-        about_icon.setToolTipText("null");
-        about_icon.setPreferredSize(new java.awt.Dimension(100, 60));
-        about_icon.addMouseListener(new java.awt.event.MouseAdapter() {
+        home_about_icon.setForeground(new java.awt.Color(28, 38, 61));
+        home_about_icon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        home_about_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/about-icon31.png"))); // NOI18N
+        home_about_icon.setToolTipText("null");
+        home_about_icon.setPreferredSize(new java.awt.Dimension(100, 60));
+
+        javax.swing.GroupLayout home_about_icon_areaLayout = new javax.swing.GroupLayout(home_about_icon_area);
+        home_about_icon_area.setLayout(home_about_icon_areaLayout);
+        home_about_icon_areaLayout.setHorizontalGroup(
+            home_about_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, home_about_icon_areaLayout.createSequentialGroup()
+                .addComponent(home_about_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        home_about_icon_areaLayout.setVerticalGroup(
+            home_about_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(home_about_icon_areaLayout.createSequentialGroup()
+                .addComponent(home_about_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        home_refresh_icon_area.setBackground(new java.awt.Color(88, 104, 220));
+        home_refresh_icon_area.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        home_refresh_icon_area.setPreferredSize(new java.awt.Dimension(100, 60));
+
+        home_refresh_icon.setForeground(new java.awt.Color(88, 104, 220));
+        home_refresh_icon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        home_refresh_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/baseline_refresh_white_18dp.png"))); // NOI18N
+        home_refresh_icon.setPreferredSize(new java.awt.Dimension(100, 60));
+        home_refresh_icon.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                dash_panel_aboutMouseExited(evt);
+                home_refresh_iconMouseExited(evt);
             }
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                dash_panel_aboutMouseEntered(evt);
+                home_refresh_iconMouseEntered(evt);
             }
         });
 
-        javax.swing.GroupLayout about_icon_areaLayout = new javax.swing.GroupLayout(about_icon_area);
-        about_icon_area.setLayout(about_icon_areaLayout);
-        about_icon_areaLayout.setHorizontalGroup(
-            about_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, about_icon_areaLayout.createSequentialGroup()
-                .addComponent(about_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+        javax.swing.GroupLayout home_refresh_icon_areaLayout = new javax.swing.GroupLayout(home_refresh_icon_area);
+        home_refresh_icon_area.setLayout(home_refresh_icon_areaLayout);
+        home_refresh_icon_areaLayout.setHorizontalGroup(
+            home_refresh_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(home_refresh_icon_areaLayout.createSequentialGroup()
+                .addComponent(home_refresh_icon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
-        about_icon_areaLayout.setVerticalGroup(
-            about_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(about_icon_areaLayout.createSequentialGroup()
-                .addComponent(about_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+        home_refresh_icon_areaLayout.setVerticalGroup(
+            home_refresh_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(home_refresh_icon_areaLayout.createSequentialGroup()
+                .addComponent(home_refresh_icon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
-        javax.swing.GroupLayout side_panelLayout = new javax.swing.GroupLayout(side_panel);
-        side_panel.setLayout(side_panelLayout);
-        side_panelLayout.setHorizontalGroup(
-            side_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(side_panelLayout.createSequentialGroup()
+        javax.swing.GroupLayout home_side_panelLayout = new javax.swing.GroupLayout(home_side_panel);
+        home_side_panel.setLayout(home_side_panelLayout);
+        home_side_panelLayout.setHorizontalGroup(
+            home_side_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(home_side_panelLayout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
-                .addGroup(side_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(app_icon_area, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(dashboard_icon_area, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(database_icon_area, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(settings_icon_area, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(about_icon_area, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(home_side_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(home_app_icon_area, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(home_dashboard_icon_area, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(home_database_icon_area, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(home_settings_icon_area, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(home_about_icon_area, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(home_refresh_icon_area, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
-        side_panelLayout.setVerticalGroup(
-            side_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(side_panelLayout.createSequentialGroup()
-                .addComponent(app_icon_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        home_side_panelLayout.setVerticalGroup(
+            home_side_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(home_side_panelLayout.createSequentialGroup()
+                .addComponent(home_app_icon_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(dashboard_icon_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(home_dashboard_icon_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(database_icon_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(home_database_icon_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(settings_icon_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(home_settings_icon_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(about_icon_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 166, Short.MAX_VALUE))
+                .addComponent(home_about_icon_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(106, 106, 106)
+                .addComponent(home_refresh_icon_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        recovered_main.setBackground(new java.awt.Color(198, 246, 213));
-        recovered_main.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
-        recovered_main.setPreferredSize(new java.awt.Dimension(200, 150));
-        recovered_main.setLayout(new java.awt.BorderLayout());
+        home_recovered_main.setBackground(new java.awt.Color(198, 246, 213));
+        home_recovered_main.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
+        home_recovered_main.setPreferredSize(new java.awt.Dimension(200, 150));
+        home_recovered_main.setLayout(new java.awt.BorderLayout());
 
-        recovered_text_area.setBackground(new java.awt.Color(240, 255, 244));
+        home_recovered_text_area.setBackground(new java.awt.Color(240, 255, 244));
 
         recovered_text.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
         recovered_text.setForeground(new java.awt.Color(56, 161, 105));
@@ -307,41 +410,41 @@ public class Main extends javax.swing.JFrame {
         recovered_text.setText("0");
         recovered_text.setToolTipText("");
 
-        javax.swing.GroupLayout recovered_text_areaLayout = new javax.swing.GroupLayout(recovered_text_area);
-        recovered_text_area.setLayout(recovered_text_areaLayout);
-        recovered_text_areaLayout.setHorizontalGroup(
-            recovered_text_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout home_recovered_text_areaLayout = new javax.swing.GroupLayout(home_recovered_text_area);
+        home_recovered_text_area.setLayout(home_recovered_text_areaLayout);
+        home_recovered_text_areaLayout.setHorizontalGroup(
+            home_recovered_text_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 198, Short.MAX_VALUE)
-            .addGroup(recovered_text_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(recovered_text_areaLayout.createSequentialGroup()
+            .addGroup(home_recovered_text_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(home_recovered_text_areaLayout.createSequentialGroup()
                     .addGap(0, 0, Short.MAX_VALUE)
                     .addComponent(recovered_text)
                     .addGap(0, 0, Short.MAX_VALUE)))
         );
-        recovered_text_areaLayout.setVerticalGroup(
-            recovered_text_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        home_recovered_text_areaLayout.setVerticalGroup(
+            home_recovered_text_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 100, Short.MAX_VALUE)
-            .addGroup(recovered_text_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(recovered_text_areaLayout.createSequentialGroup()
+            .addGroup(home_recovered_text_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(home_recovered_text_areaLayout.createSequentialGroup()
                     .addGap(0, 0, Short.MAX_VALUE)
                     .addComponent(recovered_text)
                     .addGap(0, 0, Short.MAX_VALUE)))
         );
 
-        recovered_main.add(recovered_text_area, java.awt.BorderLayout.PAGE_START);
+        home_recovered_main.add(home_recovered_text_area, java.awt.BorderLayout.PAGE_START);
 
-        text_recovered.setFont(new java.awt.Font("Segoe UI Semibold", 1, 24)); // NOI18N
-        text_recovered.setForeground(new java.awt.Color(56, 161, 105));
-        text_recovered.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        text_recovered.setText("Recovered");
-        recovered_main.add(text_recovered, java.awt.BorderLayout.CENTER);
+        home_text_recovered.setFont(new java.awt.Font("Segoe UI Semibold", 1, 24)); // NOI18N
+        home_text_recovered.setForeground(new java.awt.Color(56, 161, 105));
+        home_text_recovered.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        home_text_recovered.setText("Recovered");
+        home_recovered_main.add(home_text_recovered, java.awt.BorderLayout.CENTER);
 
-        death_main.setBackground(new java.awt.Color(226, 232, 240));
-        death_main.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
-        death_main.setPreferredSize(new java.awt.Dimension(200, 150));
-        death_main.setLayout(new java.awt.BorderLayout());
+        home_death_main.setBackground(new java.awt.Color(226, 232, 240));
+        home_death_main.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
+        home_death_main.setPreferredSize(new java.awt.Dimension(200, 150));
+        home_death_main.setLayout(new java.awt.BorderLayout());
 
-        death_text_area.setBackground(new java.awt.Color(237, 242, 247));
+        home_death_text_area.setBackground(new java.awt.Color(237, 242, 247));
 
         death_text.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
         death_text.setForeground(new java.awt.Color(113, 128, 150));
@@ -349,41 +452,41 @@ public class Main extends javax.swing.JFrame {
         death_text.setText("0");
         death_text.setToolTipText("");
 
-        javax.swing.GroupLayout death_text_areaLayout = new javax.swing.GroupLayout(death_text_area);
-        death_text_area.setLayout(death_text_areaLayout);
-        death_text_areaLayout.setHorizontalGroup(
-            death_text_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout home_death_text_areaLayout = new javax.swing.GroupLayout(home_death_text_area);
+        home_death_text_area.setLayout(home_death_text_areaLayout);
+        home_death_text_areaLayout.setHorizontalGroup(
+            home_death_text_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 198, Short.MAX_VALUE)
-            .addGroup(death_text_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(death_text_areaLayout.createSequentialGroup()
+            .addGroup(home_death_text_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(home_death_text_areaLayout.createSequentialGroup()
                     .addGap(0, 0, Short.MAX_VALUE)
                     .addComponent(death_text)
                     .addGap(0, 0, Short.MAX_VALUE)))
         );
-        death_text_areaLayout.setVerticalGroup(
-            death_text_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        home_death_text_areaLayout.setVerticalGroup(
+            home_death_text_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 100, Short.MAX_VALUE)
-            .addGroup(death_text_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(death_text_areaLayout.createSequentialGroup()
+            .addGroup(home_death_text_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(home_death_text_areaLayout.createSequentialGroup()
                     .addGap(0, 0, Short.MAX_VALUE)
                     .addComponent(death_text)
                     .addGap(0, 0, Short.MAX_VALUE)))
         );
 
-        death_main.add(death_text_area, java.awt.BorderLayout.PAGE_START);
+        home_death_main.add(home_death_text_area, java.awt.BorderLayout.PAGE_START);
 
-        text_death.setFont(new java.awt.Font("Segoe UI Semibold", 1, 24)); // NOI18N
-        text_death.setForeground(new java.awt.Color(113, 128, 150));
-        text_death.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        text_death.setText("Deaths");
-        death_main.add(text_death, java.awt.BorderLayout.CENTER);
+        home_text_death.setFont(new java.awt.Font("Segoe UI Semibold", 1, 24)); // NOI18N
+        home_text_death.setForeground(new java.awt.Color(113, 128, 150));
+        home_text_death.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        home_text_death.setText("Deaths");
+        home_death_main.add(home_text_death, java.awt.BorderLayout.CENTER);
 
-        confirmed_main.setBackground(new java.awt.Color(254, 215, 215));
-        confirmed_main.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
-        confirmed_main.setPreferredSize(new java.awt.Dimension(200, 150));
-        confirmed_main.setLayout(new java.awt.BorderLayout());
+        home_confirmed_main.setBackground(new java.awt.Color(254, 215, 215));
+        home_confirmed_main.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
+        home_confirmed_main.setPreferredSize(new java.awt.Dimension(200, 150));
+        home_confirmed_main.setLayout(new java.awt.BorderLayout());
 
-        confirmed_text_area.setBackground(new java.awt.Color(255, 245, 245));
+        home_confirmed_text_area.setBackground(new java.awt.Color(255, 245, 245));
 
         confirmed_text.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
         confirmed_text.setForeground(new java.awt.Color(229, 62, 62));
@@ -391,60 +494,62 @@ public class Main extends javax.swing.JFrame {
         confirmed_text.setText("0");
         confirmed_text.setToolTipText("");
 
-        javax.swing.GroupLayout confirmed_text_areaLayout = new javax.swing.GroupLayout(confirmed_text_area);
-        confirmed_text_area.setLayout(confirmed_text_areaLayout);
-        confirmed_text_areaLayout.setHorizontalGroup(
-            confirmed_text_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout home_confirmed_text_areaLayout = new javax.swing.GroupLayout(home_confirmed_text_area);
+        home_confirmed_text_area.setLayout(home_confirmed_text_areaLayout);
+        home_confirmed_text_areaLayout.setHorizontalGroup(
+            home_confirmed_text_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(confirmed_text, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE)
         );
-        confirmed_text_areaLayout.setVerticalGroup(
-            confirmed_text_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        home_confirmed_text_areaLayout.setVerticalGroup(
+            home_confirmed_text_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(confirmed_text, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
         );
 
-        confirmed_main.add(confirmed_text_area, java.awt.BorderLayout.PAGE_START);
+        home_confirmed_main.add(home_confirmed_text_area, java.awt.BorderLayout.PAGE_START);
 
-        text_confirmed.setFont(new java.awt.Font("Segoe UI Semibold", 1, 24)); // NOI18N
-        text_confirmed.setForeground(new java.awt.Color(229, 62, 62));
-        text_confirmed.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        text_confirmed.setText("Confirmed");
-        confirmed_main.add(text_confirmed, java.awt.BorderLayout.CENTER);
+        home_text_confirmed.setFont(new java.awt.Font("Segoe UI Semibold", 1, 24)); // NOI18N
+        home_text_confirmed.setForeground(new java.awt.Color(229, 62, 62));
+        home_text_confirmed.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        home_text_confirmed.setText("Confirmed");
+        home_confirmed_main.add(home_text_confirmed, java.awt.BorderLayout.CENTER);
 
-        free_panel.setPreferredSize(new java.awt.Dimension(840, 280));
+        home_free_panel.setBackground(new java.awt.Color(238, 238, 237));
+        home_free_panel.setPreferredSize(new java.awt.Dimension(840, 280));
 
-        information_panel.setBackground(new java.awt.Color(198, 246, 213));
-        information_panel.setPreferredSize(new java.awt.Dimension(840, 40));
+        home_information_panel.setBackground(new java.awt.Color(198, 246, 213));
+        home_information_panel.setPreferredSize(new java.awt.Dimension(840, 40));
 
         information_text_area.setFont(new java.awt.Font("Segoe UI Semibold", 1, 18)); // NOI18N
+        information_text_area.setForeground(new java.awt.Color(0, 0, 0));
         information_text_area.setText("loading...");
 
-        javax.swing.GroupLayout information_panelLayout = new javax.swing.GroupLayout(information_panel);
-        information_panel.setLayout(information_panelLayout);
-        information_panelLayout.setHorizontalGroup(
-            information_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(information_panelLayout.createSequentialGroup()
+        javax.swing.GroupLayout home_information_panelLayout = new javax.swing.GroupLayout(home_information_panel);
+        home_information_panel.setLayout(home_information_panelLayout);
+        home_information_panelLayout.setHorizontalGroup(
+            home_information_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(home_information_panelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(information_text_area, javax.swing.GroupLayout.DEFAULT_SIZE, 816, Short.MAX_VALUE)
                 .addContainerGap())
         );
-        information_panelLayout.setVerticalGroup(
-            information_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        home_information_panelLayout.setVerticalGroup(
+            home_information_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(information_text_area, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
         );
 
-        javax.swing.GroupLayout free_panelLayout = new javax.swing.GroupLayout(free_panel);
-        free_panel.setLayout(free_panelLayout);
-        free_panelLayout.setHorizontalGroup(
-            free_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(free_panelLayout.createSequentialGroup()
-                .addComponent(information_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        javax.swing.GroupLayout home_free_panelLayout = new javax.swing.GroupLayout(home_free_panel);
+        home_free_panel.setLayout(home_free_panelLayout);
+        home_free_panelLayout.setHorizontalGroup(
+            home_free_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(home_free_panelLayout.createSequentialGroup()
+                .addComponent(home_information_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
-        free_panelLayout.setVerticalGroup(
-            free_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, free_panelLayout.createSequentialGroup()
+        home_free_panelLayout.setVerticalGroup(
+            home_free_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, home_free_panelLayout.createSequentialGroup()
                 .addGap(0, 240, Short.MAX_VALUE)
-                .addComponent(information_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(home_information_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         javax.swing.GroupLayout dashboard_panelLayout = new javax.swing.GroupLayout(dashboard_panel);
@@ -452,17 +557,17 @@ public class Main extends javax.swing.JFrame {
         dashboard_panelLayout.setHorizontalGroup(
             dashboard_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(dashboard_panelLayout.createSequentialGroup()
-                .addComponent(side_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(home_side_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(dashboard_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(dashboard_panelLayout.createSequentialGroup()
                         .addGap(60, 60, 60)
-                        .addComponent(confirmed_main, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(home_confirmed_main, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(recovered_main, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(home_recovered_main, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(60, 60, 60)
-                        .addComponent(death_main, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(home_death_main, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(60, 60, 60))
-                    .addComponent(free_panel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(home_free_panel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
         dashboard_panelLayout.setVerticalGroup(
             dashboard_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -470,12 +575,12 @@ public class Main extends javax.swing.JFrame {
                 .addGroup(dashboard_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(dashboard_panelLayout.createSequentialGroup()
                         .addGroup(dashboard_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(confirmed_main, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(death_main, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(recovered_main, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(home_confirmed_main, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(home_death_main, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(home_recovered_main, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(free_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(side_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(home_free_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(home_side_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, 0))
         );
 
@@ -483,304 +588,539 @@ public class Main extends javax.swing.JFrame {
 
         database_panel.setPreferredSize(new java.awt.Dimension(940, 500));
 
-        side_panel1.setBackground(new java.awt.Color(28, 38, 61));
-        side_panel1.setPreferredSize(new java.awt.Dimension(100, 500));
+        db_side_panel.setBackground(new java.awt.Color(28, 38, 61));
+        db_side_panel.setPreferredSize(new java.awt.Dimension(100, 500));
 
-        app_icon_area1.setBackground(new java.awt.Color(28, 38, 61));
-        app_icon_area1.setMinimumSize(new java.awt.Dimension(100, 70));
+        db_app_icon_area.setBackground(new java.awt.Color(28, 38, 61));
+        db_app_icon_area.setMinimumSize(new java.awt.Dimension(100, 70));
 
-        app_icon1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        app_icon1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/covid-50x50.png"))); // NOI18N
-        app_icon1.setToolTipText("");
-        app_icon1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        app_icon1.setPreferredSize(new java.awt.Dimension(100, 70));
+        db_app_icon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        db_app_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/covid-50x50.png"))); // NOI18N
+        db_app_icon.setToolTipText("");
+        db_app_icon.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        db_app_icon.setPreferredSize(new java.awt.Dimension(100, 70));
 
-        javax.swing.GroupLayout app_icon_area1Layout = new javax.swing.GroupLayout(app_icon_area1);
-        app_icon_area1.setLayout(app_icon_area1Layout);
-        app_icon_area1Layout.setHorizontalGroup(
-            app_icon_area1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(app_icon_area1Layout.createSequentialGroup()
-                .addComponent(app_icon1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+        javax.swing.GroupLayout db_app_icon_areaLayout = new javax.swing.GroupLayout(db_app_icon_area);
+        db_app_icon_area.setLayout(db_app_icon_areaLayout);
+        db_app_icon_areaLayout.setHorizontalGroup(
+            db_app_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(db_app_icon_areaLayout.createSequentialGroup()
+                .addComponent(db_app_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
-        app_icon_area1Layout.setVerticalGroup(
-            app_icon_area1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(app_icon_area1Layout.createSequentialGroup()
-                .addComponent(app_icon1, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+        db_app_icon_areaLayout.setVerticalGroup(
+            db_app_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(db_app_icon_areaLayout.createSequentialGroup()
+                .addComponent(db_app_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
-        dashboard_icon_area1.setBackground(new java.awt.Color(28, 38, 61));
+        db_dashboard_icon_area.setBackground(new java.awt.Color(28, 38, 61));
 
-        dashboard_icon1.setForeground(new java.awt.Color(28, 38, 61));
-        dashboard_icon1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        dashboard_icon1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons8-home-24.png"))); // NOI18N
-        dashboard_icon1.setToolTipText("");
-        dashboard_icon1.setPreferredSize(new java.awt.Dimension(100, 60));
-        dashboard_icon1.addMouseListener(new java.awt.event.MouseAdapter() {
+        db_dashboard_icon.setForeground(new java.awt.Color(28, 38, 61));
+        db_dashboard_icon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        db_dashboard_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons8-home-24.png"))); // NOI18N
+        db_dashboard_icon.setToolTipText("");
+        db_dashboard_icon.setPreferredSize(new java.awt.Dimension(100, 60));
+        db_dashboard_icon.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                db_panel_homeMouseClicked(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                db_panel_homeMouseExited(evt);
-            }
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                db_panel_homeMouseEntered(evt);
+                db_dashboard_iconMouseClicked(evt);
             }
         });
 
-        javax.swing.GroupLayout dashboard_icon_area1Layout = new javax.swing.GroupLayout(dashboard_icon_area1);
-        dashboard_icon_area1.setLayout(dashboard_icon_area1Layout);
-        dashboard_icon_area1Layout.setHorizontalGroup(
-            dashboard_icon_area1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(dashboard_icon_area1Layout.createSequentialGroup()
-                .addComponent(dashboard_icon1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+        javax.swing.GroupLayout db_dashboard_icon_areaLayout = new javax.swing.GroupLayout(db_dashboard_icon_area);
+        db_dashboard_icon_area.setLayout(db_dashboard_icon_areaLayout);
+        db_dashboard_icon_areaLayout.setHorizontalGroup(
+            db_dashboard_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(db_dashboard_icon_areaLayout.createSequentialGroup()
+                .addComponent(db_dashboard_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
-        dashboard_icon_area1Layout.setVerticalGroup(
-            dashboard_icon_area1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(dashboard_icon_area1Layout.createSequentialGroup()
-                .addComponent(dashboard_icon1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
-
-        database_icon_area1.setBackground(new java.awt.Color(39, 49, 70));
-
-        database_icon1.setForeground(new java.awt.Color(39, 49, 70));
-        database_icon1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        database_icon1.setIcon(new javax.swing.ImageIcon("/home/stark/Desktop/creations/piechart-30x30.png")); // NOI18N
-        database_icon1.setToolTipText("");
-        database_icon1.setPreferredSize(new java.awt.Dimension(100, 60));
-        database_icon1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                db_panel_dbMouseExited(evt);
-            }
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                db_panel_dbMouseEntered(evt);
-            }
-        });
-
-        javax.swing.GroupLayout database_icon_area1Layout = new javax.swing.GroupLayout(database_icon_area1);
-        database_icon_area1.setLayout(database_icon_area1Layout);
-        database_icon_area1Layout.setHorizontalGroup(
-            database_icon_area1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, database_icon_area1Layout.createSequentialGroup()
-                .addComponent(database_icon1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
-        database_icon_area1Layout.setVerticalGroup(
-            database_icon_area1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(database_icon_area1Layout.createSequentialGroup()
-                .addComponent(database_icon1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+        db_dashboard_icon_areaLayout.setVerticalGroup(
+            db_dashboard_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(db_dashboard_icon_areaLayout.createSequentialGroup()
+                .addComponent(db_dashboard_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
-        settings_icon_area1.setBackground(new java.awt.Color(28, 38, 61));
-        settings_icon_area1.setPreferredSize(new java.awt.Dimension(100, 60));
+        db_database_icon_area.setBackground(new java.awt.Color(39, 49, 70));
 
-        settings_icon1.setForeground(new java.awt.Color(28, 38, 61));
-        settings_icon1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        settings_icon1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons8-settings-24.png"))); // NOI18N
-        settings_icon1.setToolTipText("");
-        settings_icon1.setPreferredSize(new java.awt.Dimension(100, 60));
-        settings_icon1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                db_panel_settingsMouseExited(evt);
-            }
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                db_panel_settingsMouseEntered(evt);
+        db_database_icon.setForeground(new java.awt.Color(39, 49, 70));
+        db_database_icon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        db_database_icon.setIcon(new javax.swing.ImageIcon("/home/stark/Desktop/creations/piechart-30x30.png")); // NOI18N
+        db_database_icon.setToolTipText("");
+        db_database_icon.setPreferredSize(new java.awt.Dimension(100, 60));
+
+        javax.swing.GroupLayout db_database_icon_areaLayout = new javax.swing.GroupLayout(db_database_icon_area);
+        db_database_icon_area.setLayout(db_database_icon_areaLayout);
+        db_database_icon_areaLayout.setHorizontalGroup(
+            db_database_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, db_database_icon_areaLayout.createSequentialGroup()
+                .addComponent(db_database_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        db_database_icon_areaLayout.setVerticalGroup(
+            db_database_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(db_database_icon_areaLayout.createSequentialGroup()
+                .addComponent(db_database_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        db_settings_icon_area.setBackground(new java.awt.Color(28, 38, 61));
+        db_settings_icon_area.setPreferredSize(new java.awt.Dimension(100, 60));
+
+        db_settings_icon.setForeground(new java.awt.Color(28, 38, 61));
+        db_settings_icon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        db_settings_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons8-settings-24.png"))); // NOI18N
+        db_settings_icon.setToolTipText("");
+        db_settings_icon.setPreferredSize(new java.awt.Dimension(100, 60));
+        db_settings_icon.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                db_settings_iconMouseClicked(evt);
             }
         });
 
-        javax.swing.GroupLayout settings_icon_area1Layout = new javax.swing.GroupLayout(settings_icon_area1);
-        settings_icon_area1.setLayout(settings_icon_area1Layout);
-        settings_icon_area1Layout.setHorizontalGroup(
-            settings_icon_area1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, settings_icon_area1Layout.createSequentialGroup()
-                .addComponent(settings_icon1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
-        settings_icon_area1Layout.setVerticalGroup(
-            settings_icon_area1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(settings_icon_area1Layout.createSequentialGroup()
-                .addComponent(settings_icon1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
-
-        about_icon_area1.setBackground(new java.awt.Color(28, 38, 61));
-        about_icon_area1.setPreferredSize(new java.awt.Dimension(100, 60));
-
-        about_icon1.setForeground(new java.awt.Color(28, 38, 61));
-        about_icon1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        about_icon1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/about-icon31.png"))); // NOI18N
-        about_icon1.setToolTipText("null");
-        about_icon1.setPreferredSize(new java.awt.Dimension(100, 60));
-        about_icon1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                db_panel_aboutMouseExited(evt);
-            }
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                db_panel_aboutMouseEntered(evt);
-            }
-        });
-
-        javax.swing.GroupLayout about_icon_area1Layout = new javax.swing.GroupLayout(about_icon_area1);
-        about_icon_area1.setLayout(about_icon_area1Layout);
-        about_icon_area1Layout.setHorizontalGroup(
-            about_icon_area1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, about_icon_area1Layout.createSequentialGroup()
-                .addComponent(about_icon1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
-        about_icon_area1Layout.setVerticalGroup(
-            about_icon_area1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(about_icon_area1Layout.createSequentialGroup()
-                .addComponent(about_icon1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
-
-        javax.swing.GroupLayout side_panel1Layout = new javax.swing.GroupLayout(side_panel1);
-        side_panel1.setLayout(side_panel1Layout);
-        side_panel1Layout.setHorizontalGroup(
-            side_panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(side_panel1Layout.createSequentialGroup()
+        javax.swing.GroupLayout db_settings_icon_areaLayout = new javax.swing.GroupLayout(db_settings_icon_area);
+        db_settings_icon_area.setLayout(db_settings_icon_areaLayout);
+        db_settings_icon_areaLayout.setHorizontalGroup(
+            db_settings_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, db_settings_icon_areaLayout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
-                .addGroup(side_panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(app_icon_area1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(dashboard_icon_area1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(database_icon_area1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(settings_icon_area1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(about_icon_area1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addComponent(db_settings_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
-        side_panel1Layout.setVerticalGroup(
-            side_panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(side_panel1Layout.createSequentialGroup()
-                .addComponent(app_icon_area1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(dashboard_icon_area1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(database_icon_area1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(settings_icon_area1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(about_icon_area1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 166, Short.MAX_VALUE))
+        db_settings_icon_areaLayout.setVerticalGroup(
+            db_settings_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, db_settings_icon_areaLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(db_settings_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
+
+        db_about_icon_area.setBackground(new java.awt.Color(28, 38, 61));
+        db_about_icon_area.setPreferredSize(new java.awt.Dimension(100, 60));
+
+        db_about_icon.setForeground(new java.awt.Color(28, 38, 61));
+        db_about_icon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        db_about_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/about-icon31.png"))); // NOI18N
+        db_about_icon.setToolTipText("null");
+        db_about_icon.setPreferredSize(new java.awt.Dimension(100, 60));
+
+        javax.swing.GroupLayout db_about_icon_areaLayout = new javax.swing.GroupLayout(db_about_icon_area);
+        db_about_icon_area.setLayout(db_about_icon_areaLayout);
+        db_about_icon_areaLayout.setHorizontalGroup(
+            db_about_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, db_about_icon_areaLayout.createSequentialGroup()
+                .addComponent(db_about_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        db_about_icon_areaLayout.setVerticalGroup(
+            db_about_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(db_about_icon_areaLayout.createSequentialGroup()
+                .addComponent(db_about_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        db_refresh_icon_area.setBackground(new java.awt.Color(88, 104, 220));
+        db_refresh_icon_area.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        db_refresh_icon_area.setPreferredSize(new java.awt.Dimension(100, 60));
+
+        db_refresh_icon.setBackground(new java.awt.Color(28, 38, 61));
+        db_refresh_icon.setForeground(new java.awt.Color(88, 104, 220));
+        db_refresh_icon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        db_refresh_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/baseline_refresh_white_18dp.png"))); // NOI18N
+        db_refresh_icon.setPreferredSize(new java.awt.Dimension(100, 60));
+
+        javax.swing.GroupLayout db_refresh_icon_areaLayout = new javax.swing.GroupLayout(db_refresh_icon_area);
+        db_refresh_icon_area.setLayout(db_refresh_icon_areaLayout);
+        db_refresh_icon_areaLayout.setHorizontalGroup(
+            db_refresh_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(db_refresh_icon_areaLayout.createSequentialGroup()
+                .addComponent(db_refresh_icon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        db_refresh_icon_areaLayout.setVerticalGroup(
+            db_refresh_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(db_refresh_icon_areaLayout.createSequentialGroup()
+                .addComponent(db_refresh_icon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout db_side_panelLayout = new javax.swing.GroupLayout(db_side_panel);
+        db_side_panel.setLayout(db_side_panelLayout);
+        db_side_panelLayout.setHorizontalGroup(
+            db_side_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(db_side_panelLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addGroup(db_side_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(db_app_icon_area, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(db_dashboard_icon_area, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(db_database_icon_area, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(db_settings_icon_area, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(db_about_icon_area, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(db_refresh_icon_area, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+        );
+        db_side_panelLayout.setVerticalGroup(
+            db_side_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(db_side_panelLayout.createSequentialGroup()
+                .addComponent(db_app_icon_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(db_dashboard_icon_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(db_database_icon_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(db_settings_icon_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(db_about_icon_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 106, Short.MAX_VALUE)
+                .addComponent(db_refresh_icon_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
+        db_free_panel.setBackground(new java.awt.Color(34, 41, 57));
+        db_free_panel.setPreferredSize(new java.awt.Dimension(840, 70));
+
+        javax.swing.GroupLayout db_free_panelLayout = new javax.swing.GroupLayout(db_free_panel);
+        db_free_panel.setLayout(db_free_panelLayout);
+        db_free_panelLayout.setHorizontalGroup(
+            db_free_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 840, Short.MAX_VALUE)
+        );
+        db_free_panelLayout.setVerticalGroup(
+            db_free_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 70, Short.MAX_VALUE)
+        );
+
+        db_information_panel.setBackground(new java.awt.Color(34, 41, 57));
+        db_information_panel.setForeground(new java.awt.Color(255, 255, 255));
+        db_information_panel.setPreferredSize(new java.awt.Dimension(840, 40));
+
+        db_information_text_area.setBackground(new java.awt.Color(255, 255, 255));
+        db_information_text_area.setFont(new java.awt.Font("Segoe UI Semibold", 1, 18)); // NOI18N
+        db_information_text_area.setForeground(new java.awt.Color(0, 0, 0));
+
+        javax.swing.GroupLayout db_information_panelLayout = new javax.swing.GroupLayout(db_information_panel);
+        db_information_panel.setLayout(db_information_panelLayout);
+        db_information_panelLayout.setHorizontalGroup(
+            db_information_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(db_information_panelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(db_information_text_area, javax.swing.GroupLayout.PREFERRED_SIZE, 816, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        db_information_panelLayout.setVerticalGroup(
+            db_information_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(db_information_text_area, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+
+        db_table_scrollpane.setBackground(new java.awt.Color(28, 38, 61));
+        db_table_scrollpane.setBorder(null);
+        db_table_scrollpane.setToolTipText("Covid Country Based Chart");
+        db_table_scrollpane.setViewportBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        db_table_scrollpane.setFont(new java.awt.Font("Segoe UI Semibold", 1, 18)); // NOI18N
+        db_table_scrollpane.setHorizontalScrollBar(null);
+        db_table_scrollpane.setPreferredSize(new java.awt.Dimension(840, 390));
+
+        db_table_panel.setAutoCreateRowSorter(true);
+        db_table_panel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
+        db_table_panel.setFont(new java.awt.Font("Segoe UI Semibold", 0, 18)); // NOI18N
+        db_table_panel.setForeground(new java.awt.Color(255, 255, 255));
+        db_table_panel.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "CountryName", "CountryCode", "Confirmed", "Recovered", "Deaths"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        db_table_panel.setFillsViewportHeight(true);
+        db_table_panel.setGridColor(new java.awt.Color(255, 255, 255));
+        db_table_panel.setRowHeight(27);
+        db_table_panel.setShowVerticalLines(false);
+        db_table_panel.getTableHeader().setResizingAllowed(false);
+        db_table_scrollpane.setViewportView(db_table_panel);
+        if (db_table_panel.getColumnModel().getColumnCount() > 0) {
+            db_table_panel.getColumnModel().getColumn(0).setResizable(false);
+            db_table_panel.getColumnModel().getColumn(1).setResizable(false);
+            db_table_panel.getColumnModel().getColumn(2).setResizable(false);
+            db_table_panel.getColumnModel().getColumn(3).setResizable(false);
+            db_table_panel.getColumnModel().getColumn(4).setResizable(false);
+        }
 
         javax.swing.GroupLayout database_panelLayout = new javax.swing.GroupLayout(database_panel);
         database_panel.setLayout(database_panelLayout);
         database_panelLayout.setHorizontalGroup(
             database_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(database_panelLayout.createSequentialGroup()
-                .addComponent(side_panel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 840, Short.MAX_VALUE))
+                .addComponent(db_side_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(database_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(db_table_scrollpane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 840, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(database_panelLayout.createSequentialGroup()
+                        .addGroup(database_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(db_information_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(db_free_panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
         database_panelLayout.setVerticalGroup(
             database_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(database_panelLayout.createSequentialGroup()
-                .addComponent(side_panel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(database_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(database_panelLayout.createSequentialGroup()
+                        .addComponent(db_free_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, 0)
+                        .addComponent(db_table_scrollpane, javax.swing.GroupLayout.PREFERRED_SIZE, 390, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, 0)
+                        .addComponent(db_information_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(db_side_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
         getContentPane().add(database_panel, "card3");
+
+        settings_panel.setPreferredSize(new java.awt.Dimension(940, 500));
+
+        stg_side_panel.setBackground(new java.awt.Color(28, 38, 61));
+        stg_side_panel.setPreferredSize(new java.awt.Dimension(100, 500));
+
+        stg_app_icon_area.setBackground(new java.awt.Color(28, 38, 61));
+        stg_app_icon_area.setMinimumSize(new java.awt.Dimension(100, 70));
+
+        stg_app_icon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        stg_app_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/covid-50x50.png"))); // NOI18N
+        stg_app_icon.setToolTipText("");
+        stg_app_icon.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        stg_app_icon.setPreferredSize(new java.awt.Dimension(100, 70));
+
+        javax.swing.GroupLayout stg_app_icon_areaLayout = new javax.swing.GroupLayout(stg_app_icon_area);
+        stg_app_icon_area.setLayout(stg_app_icon_areaLayout);
+        stg_app_icon_areaLayout.setHorizontalGroup(
+            stg_app_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(stg_app_icon_areaLayout.createSequentialGroup()
+                .addComponent(stg_app_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        stg_app_icon_areaLayout.setVerticalGroup(
+            stg_app_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(stg_app_icon_areaLayout.createSequentialGroup()
+                .addComponent(stg_app_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        stg_dashboard_icon_area.setBackground(new java.awt.Color(28, 38, 61));
+
+        stg_dashboard_icon.setForeground(new java.awt.Color(28, 38, 61));
+        stg_dashboard_icon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        stg_dashboard_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons8-home-24.png"))); // NOI18N
+        stg_dashboard_icon.setToolTipText("");
+        stg_dashboard_icon.setPreferredSize(new java.awt.Dimension(100, 60));
+        stg_dashboard_icon.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                stg_dashboard_iconMouseClicked(evt);
+            }
+        });
+
+        javax.swing.GroupLayout stg_dashboard_icon_areaLayout = new javax.swing.GroupLayout(stg_dashboard_icon_area);
+        stg_dashboard_icon_area.setLayout(stg_dashboard_icon_areaLayout);
+        stg_dashboard_icon_areaLayout.setHorizontalGroup(
+            stg_dashboard_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(stg_dashboard_icon_areaLayout.createSequentialGroup()
+                .addComponent(stg_dashboard_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        stg_dashboard_icon_areaLayout.setVerticalGroup(
+            stg_dashboard_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(stg_dashboard_icon_areaLayout.createSequentialGroup()
+                .addComponent(stg_dashboard_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        stg_database_icon_area.setBackground(new java.awt.Color(28, 38, 61));
+
+        stg_database_icon.setForeground(new java.awt.Color(28, 38, 61));
+        stg_database_icon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        stg_database_icon.setIcon(new javax.swing.ImageIcon("/home/stark/Desktop/creations/piechart-30x30.png")); // NOI18N
+        stg_database_icon.setToolTipText("");
+        stg_database_icon.setPreferredSize(new java.awt.Dimension(100, 60));
+        stg_database_icon.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                stg_database_iconMouseClicked(evt);
+            }
+        });
+
+        javax.swing.GroupLayout stg_database_icon_areaLayout = new javax.swing.GroupLayout(stg_database_icon_area);
+        stg_database_icon_area.setLayout(stg_database_icon_areaLayout);
+        stg_database_icon_areaLayout.setHorizontalGroup(
+            stg_database_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, stg_database_icon_areaLayout.createSequentialGroup()
+                .addComponent(stg_database_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        stg_database_icon_areaLayout.setVerticalGroup(
+            stg_database_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(stg_database_icon_areaLayout.createSequentialGroup()
+                .addComponent(stg_database_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        stg_settings_icon_area.setBackground(new java.awt.Color(39, 49, 70));
+        stg_settings_icon_area.setPreferredSize(new java.awt.Dimension(100, 60));
+
+        stg_settings_icon.setForeground(new java.awt.Color(39, 49, 70));
+        stg_settings_icon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        stg_settings_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons8-settings-24.png"))); // NOI18N
+        stg_settings_icon.setToolTipText("");
+        stg_settings_icon.setPreferredSize(new java.awt.Dimension(100, 60));
+
+        javax.swing.GroupLayout stg_settings_icon_areaLayout = new javax.swing.GroupLayout(stg_settings_icon_area);
+        stg_settings_icon_area.setLayout(stg_settings_icon_areaLayout);
+        stg_settings_icon_areaLayout.setHorizontalGroup(
+            stg_settings_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, stg_settings_icon_areaLayout.createSequentialGroup()
+                .addComponent(stg_settings_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        stg_settings_icon_areaLayout.setVerticalGroup(
+            stg_settings_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(stg_settings_icon_areaLayout.createSequentialGroup()
+                .addComponent(stg_settings_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        stg_about_icon_area.setBackground(new java.awt.Color(28, 38, 61));
+        stg_about_icon_area.setPreferredSize(new java.awt.Dimension(100, 60));
+
+        stg_about_icon.setForeground(new java.awt.Color(28, 38, 61));
+        stg_about_icon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        stg_about_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/about-icon31.png"))); // NOI18N
+        stg_about_icon.setToolTipText("null");
+        stg_about_icon.setPreferredSize(new java.awt.Dimension(100, 60));
+
+        javax.swing.GroupLayout stg_about_icon_areaLayout = new javax.swing.GroupLayout(stg_about_icon_area);
+        stg_about_icon_area.setLayout(stg_about_icon_areaLayout);
+        stg_about_icon_areaLayout.setHorizontalGroup(
+            stg_about_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, stg_about_icon_areaLayout.createSequentialGroup()
+                .addComponent(stg_about_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        stg_about_icon_areaLayout.setVerticalGroup(
+            stg_about_icon_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(stg_about_icon_areaLayout.createSequentialGroup()
+                .addComponent(stg_about_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout stg_side_panelLayout = new javax.swing.GroupLayout(stg_side_panel);
+        stg_side_panel.setLayout(stg_side_panelLayout);
+        stg_side_panelLayout.setHorizontalGroup(
+            stg_side_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(stg_side_panelLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addGroup(stg_side_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(stg_app_icon_area, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(stg_dashboard_icon_area, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(stg_database_icon_area, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(stg_settings_icon_area, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(stg_about_icon_area, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+        );
+        stg_side_panelLayout.setVerticalGroup(
+            stg_side_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(stg_side_panelLayout.createSequentialGroup()
+                .addComponent(stg_app_icon_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(stg_dashboard_icon_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(stg_database_icon_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(stg_settings_icon_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(stg_about_icon_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 166, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout settings_panelLayout = new javax.swing.GroupLayout(settings_panel);
+        settings_panel.setLayout(settings_panelLayout);
+        settings_panelLayout.setHorizontalGroup(
+            settings_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(settings_panelLayout.createSequentialGroup()
+                .addComponent(stg_side_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 840, Short.MAX_VALUE))
+        );
+        settings_panelLayout.setVerticalGroup(
+            settings_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(settings_panelLayout.createSequentialGroup()
+                .addComponent(stg_side_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0))
+        );
+
+        getContentPane().add(settings_panel, "card4");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         try {
+            this.addMouseEvent();
             Connection db = Database.getConnection();
-            ResultSet r = Database.queryCountry(db, "Global");
-            r.next();
-            confirmed_text.setText(String.valueOf(r.getInt("confirmed")));
-            recovered_text.setText(String.valueOf(r.getInt("recovered")));
-            death_text.setText(String.valueOf(r.getInt("death")));
-            information_panel.setVisible(false);
+            loadDashboard(db);
+            loadTable(db);
+            home_information_panel.setVisible(false);
         } catch (SQLException ex) {
-            information_panel.setBackground(new java.awt.Color(254,215,215));
-            information_text_area.setText("Could not connect into database");
-        } catch (Exception ex){
-            information_panel.setBackground(new java.awt.Color(254,215,215));
-            information_text_area.setText(ex.getMessage());
-        } finally {
-            information_panel.repaint();
+            this.setInformation(new java.awt.Color(254, 215, 215), "Could not connect into database");
+        } catch (Exception ex) {
+            this.setInformation(new java.awt.Color(254, 215, 215), ex.getMessage());
         }
     }//GEN-LAST:event_formWindowOpened
 
-    private void dash_panel_homeMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dash_panel_homeMouseEntered
-        HoverAnimation(false, evt);
-    }//GEN-LAST:event_dash_panel_homeMouseEntered
+    private void db_settings_iconMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_db_settings_iconMouseClicked
+        database_panel.setVisible(false);
+        settings_panel.setVisible(true);
+    }//GEN-LAST:event_db_settings_iconMouseClicked
 
-    private void dash_panel_homeMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dash_panel_homeMouseExited
-       HoverAnimation(true, evt);
-    }//GEN-LAST:event_dash_panel_homeMouseExited
-
-    private void dash_panel_db_iconMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dash_panel_db_iconMouseEntered
-        HoverAnimation(false, evt);
-    }//GEN-LAST:event_dash_panel_db_iconMouseEntered
-
-    private void dash_panel_db_iconMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dash_panel_db_iconMouseExited
-        HoverAnimation(true, evt);
-    }//GEN-LAST:event_dash_panel_db_iconMouseExited
-
-    private void dash_panel_settingMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dash_panel_settingMouseEntered
-        HoverAnimation(false, evt);
-    }//GEN-LAST:event_dash_panel_settingMouseEntered
-
-    private void dash_panel_settingMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dash_panel_settingMouseExited
-        HoverAnimation(true, evt);
-    }//GEN-LAST:event_dash_panel_settingMouseExited
-
-    private void dash_panel_aboutMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dash_panel_aboutMouseEntered
-        HoverAnimation(false, evt);
-    }//GEN-LAST:event_dash_panel_aboutMouseEntered
-
-    private void dash_panel_aboutMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dash_panel_aboutMouseExited
-        HoverAnimation(true, evt);
-    }//GEN-LAST:event_dash_panel_aboutMouseExited
-
-    private void db_panel_homeMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_db_panel_homeMouseExited
-        HoverAnimation(true, evt);
-    }//GEN-LAST:event_db_panel_homeMouseExited
-
-    private void db_panel_homeMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_db_panel_homeMouseEntered
-        HoverAnimation(false, evt);
-    }//GEN-LAST:event_db_panel_homeMouseEntered
-
-    private void db_panel_dbMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_db_panel_dbMouseExited
-        HoverAnimation(true, evt);
-    }//GEN-LAST:event_db_panel_dbMouseExited
-
-    private void db_panel_dbMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_db_panel_dbMouseEntered
-        HoverAnimation(false, evt);
-    }//GEN-LAST:event_db_panel_dbMouseEntered
-
-    private void db_panel_settingsMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_db_panel_settingsMouseExited
-        HoverAnimation(true, evt);
-    }//GEN-LAST:event_db_panel_settingsMouseExited
-
-    private void db_panel_settingsMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_db_panel_settingsMouseEntered
-        HoverAnimation(false, evt);
-    }//GEN-LAST:event_db_panel_settingsMouseEntered
-
-    private void db_panel_aboutMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_db_panel_aboutMouseExited
-        HoverAnimation(true, evt);
-    }//GEN-LAST:event_db_panel_aboutMouseExited
-
-    private void db_panel_aboutMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_db_panel_aboutMouseEntered
-        HoverAnimation(false, evt);
-    }//GEN-LAST:event_db_panel_aboutMouseEntered
-
-    private void dash_panel_db_iconMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dash_panel_db_iconMouseClicked
-        dashboard_panel.setVisible(false);
-        database_panel.setVisible(true);
-        this.repaint();
-    }//GEN-LAST:event_dash_panel_db_iconMouseClicked
-
-    private void db_panel_homeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_db_panel_homeMouseClicked
+    private void db_dashboard_iconMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_db_dashboard_iconMouseClicked
         database_panel.setVisible(false);
         dashboard_panel.setVisible(true);
-    }//GEN-LAST:event_db_panel_homeMouseClicked
+    }//GEN-LAST:event_db_dashboard_iconMouseClicked
+
+    private void home_database_iconMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_home_database_iconMouseClicked
+        dashboard_panel.setVisible(false);
+        database_panel.setVisible(true);
+    }//GEN-LAST:event_home_database_iconMouseClicked
+
+    private void home_settings_iconMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_home_settings_iconMouseClicked
+        dashboard_panel.setVisible(false);
+        settings_panel.setVisible(true);
+    }//GEN-LAST:event_home_settings_iconMouseClicked
+
+    private void stg_dashboard_iconMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_stg_dashboard_iconMouseClicked
+        settings_panel.setVisible(false);
+        dashboard_panel.setVisible(true);
+    }//GEN-LAST:event_stg_dashboard_iconMouseClicked
+
+    private void stg_database_iconMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_stg_database_iconMouseClicked
+        settings_panel.setVisible(false);
+        database_panel.setVisible(true);
+    }//GEN-LAST:event_stg_database_iconMouseClicked
+
+    private void home_refresh_iconMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_home_refresh_iconMouseEntered
+        home_refresh_icon_area.setBackground(new java.awt.Color(3, 218, 198));
+    }//GEN-LAST:event_home_refresh_iconMouseEntered
+
+    private void home_refresh_iconMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_home_refresh_iconMouseExited
+        home_refresh_icon_area.setBackground(new java.awt.Color(88, 104, 220));
+    }//GEN-LAST:event_home_refresh_iconMouseExited
 
     /**
      * @param args the command line arguments
@@ -793,7 +1133,7 @@ public class Main extends javax.swing.JFrame {
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
+                if ("GTK+".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
@@ -818,44 +1158,65 @@ public class Main extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel about_icon;
-    private javax.swing.JLabel about_icon1;
-    private javax.swing.JPanel about_icon_area;
-    private javax.swing.JPanel about_icon_area1;
-    private javax.swing.JLabel app_icon;
-    private javax.swing.JLabel app_icon1;
-    private javax.swing.JPanel app_icon_area;
-    private javax.swing.JPanel app_icon_area1;
-    private javax.swing.JPanel confirmed_main;
     private javax.swing.JLabel confirmed_text;
-    private javax.swing.JPanel confirmed_text_area;
-    private javax.swing.JLabel dashboard_icon;
-    private javax.swing.JLabel dashboard_icon1;
-    private javax.swing.JPanel dashboard_icon_area;
-    private javax.swing.JPanel dashboard_icon_area1;
     private javax.swing.JPanel dashboard_panel;
-    private javax.swing.JLabel database_icon;
-    private javax.swing.JLabel database_icon1;
-    private javax.swing.JPanel database_icon_area;
-    private javax.swing.JPanel database_icon_area1;
     private javax.swing.JPanel database_panel;
-    private javax.swing.JPanel death_main;
+    private javax.swing.JLabel db_about_icon;
+    private javax.swing.JPanel db_about_icon_area;
+    private javax.swing.JLabel db_app_icon;
+    private javax.swing.JPanel db_app_icon_area;
+    private javax.swing.JLabel db_dashboard_icon;
+    private javax.swing.JPanel db_dashboard_icon_area;
+    private javax.swing.JLabel db_database_icon;
+    private javax.swing.JPanel db_database_icon_area;
+    private javax.swing.JPanel db_free_panel;
+    private javax.swing.JPanel db_information_panel;
+    private javax.swing.JLabel db_information_text_area;
+    private javax.swing.JLabel db_refresh_icon;
+    private javax.swing.JPanel db_refresh_icon_area;
+    private javax.swing.JLabel db_settings_icon;
+    private javax.swing.JPanel db_settings_icon_area;
+    private javax.swing.JPanel db_side_panel;
+    private javax.swing.JTable db_table_panel;
+    private javax.swing.JScrollPane db_table_scrollpane;
     private javax.swing.JLabel death_text;
-    private javax.swing.JPanel death_text_area;
-    private javax.swing.JPanel free_panel;
-    private javax.swing.JPanel information_panel;
+    private javax.swing.JLabel home_about_icon;
+    private javax.swing.JPanel home_about_icon_area;
+    private javax.swing.JLabel home_app_icon;
+    private javax.swing.JPanel home_app_icon_area;
+    private javax.swing.JPanel home_confirmed_main;
+    private javax.swing.JPanel home_confirmed_text_area;
+    private javax.swing.JLabel home_dashboard_icon;
+    private javax.swing.JPanel home_dashboard_icon_area;
+    private javax.swing.JLabel home_database_icon;
+    private javax.swing.JPanel home_database_icon_area;
+    private javax.swing.JPanel home_death_main;
+    private javax.swing.JPanel home_death_text_area;
+    private javax.swing.JPanel home_free_panel;
+    private javax.swing.JPanel home_information_panel;
+    private javax.swing.JPanel home_recovered_main;
+    private javax.swing.JPanel home_recovered_text_area;
+    private javax.swing.JLabel home_refresh_icon;
+    private javax.swing.JPanel home_refresh_icon_area;
+    private javax.swing.JLabel home_settings_icon;
+    private javax.swing.JPanel home_settings_icon_area;
+    private javax.swing.JPanel home_side_panel;
+    private javax.swing.JLabel home_text_confirmed;
+    private javax.swing.JLabel home_text_death;
+    private javax.swing.JLabel home_text_recovered;
     private javax.swing.JLabel information_text_area;
-    private javax.swing.JPanel recovered_main;
     private javax.swing.JLabel recovered_text;
-    private javax.swing.JPanel recovered_text_area;
-    private javax.swing.JLabel settings_icon;
-    private javax.swing.JLabel settings_icon1;
-    private javax.swing.JPanel settings_icon_area;
-    private javax.swing.JPanel settings_icon_area1;
-    private javax.swing.JPanel side_panel;
-    private javax.swing.JPanel side_panel1;
-    private javax.swing.JLabel text_confirmed;
-    private javax.swing.JLabel text_death;
-    private javax.swing.JLabel text_recovered;
+    private javax.swing.JPanel settings_panel;
+    private javax.swing.JLabel stg_about_icon;
+    private javax.swing.JPanel stg_about_icon_area;
+    private javax.swing.JLabel stg_app_icon;
+    private javax.swing.JPanel stg_app_icon_area;
+    private javax.swing.JLabel stg_dashboard_icon;
+    private javax.swing.JPanel stg_dashboard_icon_area;
+    private javax.swing.JLabel stg_database_icon;
+    private javax.swing.JPanel stg_database_icon_area;
+    private javax.swing.JLabel stg_settings_icon;
+    private javax.swing.JPanel stg_settings_icon_area;
+    private javax.swing.JPanel stg_side_panel;
     // End of variables declaration//GEN-END:variables
 }
