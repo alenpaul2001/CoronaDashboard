@@ -22,8 +22,6 @@ import java.awt.Color;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -42,28 +40,61 @@ public class Main extends javax.swing.JFrame {
 
     // function to refresh covid statitics
     private void refreshEntrys() {
+        // first we get the already exisiting mouse listerner of both refresh icon to safe keep
         java.awt.event.MouseListener mouse_listerner = home_refresh_icon.getMouseListeners()[0];
+        /**
+         * then we remove both of the mouse listerner
+         * why? cause we don't want the user to spam the refresh icon
+         * in this way the user can only call the refresh function only after
+         * the previous one is finished.
+         */
         home_refresh_icon.removeMouseListener(mouse_listerner);
         db_refresh_icon.removeMouseListener(mouse_listerner);
+        // then we set fetching api message to both information panel
         this.setInformation(new java.awt.Color(198, 246, 213), "fetching api...");
         try {
+            // this function fetches the api and returns the json -> java Object version
             Response res = Request.request();
+            // now we set `writing into database` message to both information panel.
             this.setInformation(new java.awt.Color(198, 246, 213), "writing into database...");
+            // expicitly add global as a country
             res.global.countryName = "Global";
             res.global.countryCode = "GL";
+            // add global in front of the countrys List
             res.countries.add(0, res.global);
+            // we update the database with new entries
             Database.updateCountries(res.countries);
-            this.setInformation(new java.awt.Color(198, 246, 213), "successfully refreshed data...");
+            // now we set `updating components` message to both information panel.
+            this.setInformation(new java.awt.Color(198, 246, 213), "updating components...");
+            Thread.sleep(1000);
+            // following codes will update both panels then sleep for 2s then hide the info panels
             Connection db = Database.getConnection();
             this.loadDashboard(db);
             this.loadTable(db);
-            Thread.sleep(1000);
+            this.setInformation(new java.awt.Color(198, 246, 213), "successfully refreshed data...");
+            Thread.sleep(2000);
             this.setInformation(null, null);
+        } catch (SQLException ex) {
+            // handling database related errors
+            this.setInformation(new java.awt.Color(254, 215, 215), "Failed writing to database");
+            this.information_text_area.setToolTipText(ex.getMessage());
+            this.db_information_text_area.setToolTipText(ex.getMessage());
+        } catch (java.net.UnknownHostException ex){
+            // handling connectivity related errors.
+            this.setInformation(new java.awt.Color(254, 215, 215), "Failed connecting to internet");
+            this.information_text_area.setToolTipText(ex.getMessage());
+            this.db_information_text_area.setToolTipText(ex.getMessage());
+        }
+        catch (Exception ex) {
+            // catch general errors.
+            this.setInformation(new java.awt.Color(254, 215, 215), ex.getMessage());
+        } finally {
+            // finnaly we change the color of refresh icon to normal
+            this.home_refresh_icon_area.setBackground(new java.awt.Color(88,104,220));
+            this.db_refresh_icon_area.setBackground(new java.awt.Color(88,104,220));
+            // and add the mouse  listerner we safe keeped before.
             home_refresh_icon.addMouseListener(mouse_listerner);
             db_refresh_icon.addMouseListener(mouse_listerner);
-        } catch (Exception ex) {
-            this.setInformation(new java.awt.Color(254, 215, 215), ex.getMessage());
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
@@ -91,7 +122,10 @@ public class Main extends javax.swing.JFrame {
             }
 
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                System.out.println("clicked");
+                // run the function in a new thread.
+                // why? we don't want the function to block our main thread,
+                // this way we can interact with the ui even though the
+                // function is running..,
                 new Thread(() -> refreshEntrys()).start();
             }
         };
@@ -151,12 +185,10 @@ public class Main extends javax.swing.JFrame {
             information_text_area.setText(null);
             db_information_text_area.setText(null);
         } else {
-            System.out.println("working");
             home_information_panel.setBackground(color);
             db_information_panel.setBackground(color);
             information_text_area.setText(message);
             db_information_text_area.setText(message);
-            home_information_panel.revalidate();
         }
     }
 
@@ -1133,9 +1165,13 @@ public class Main extends javax.swing.JFrame {
             Connection db = Database.getConnection();
             loadDashboard(db);
             loadTable(db);
-        } catch (SQLException ex) {
+        } catch (java.sql.SQLSyntaxErrorException ex) {
+            this.setInformation(new java.awt.Color(254, 215, 215), "Opening for the first time? consider tapping the refresh icon");
+        }
+        catch (SQLException ex) {
             this.setInformation(new java.awt.Color(254, 215, 215), "Could not connect into database");
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             this.setInformation(new java.awt.Color(254, 215, 215), ex.getMessage());
         }
     }//GEN-LAST:event_formWindowOpened

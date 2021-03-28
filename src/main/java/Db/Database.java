@@ -17,8 +17,6 @@
 package Db;
 
 import java.sql.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.List;
 import Http.Scaffold;
 
@@ -34,76 +32,55 @@ public class Database {
             return DriverManager.getConnection(dbURI, dbUser, dbPass);
     }
 
-    public static void updateCountries(List<Scaffold> countries){
-        try{
-            Connection dbConn = getConnection();
+    public static void updateCountries(List<Scaffold> countries) throws SQLException{
+        try (Connection dbConn = getConnection()) {
             createTable(dbConn);
-            try{
-                countries.forEach((country) -> {
+            countries.forEach((country) -> {
+                try {
                     insertValue(dbConn, country);
-                });
-            } finally {
-                dbConn.close();
-            }
-        } catch (Exception ex){
-                Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
-        } 
+                } catch (SQLException ex) {
+                    System.out.println("Failed adding" + country.countryName);
+                }
+            }); 
+        }
     }
     
-    public static void createTable(Connection db){
-        try{
-            PreparedStatement query = db.prepareStatement(
-                    "CREATE TABLE IF NOT EXISTS COVIDCHART "
-                            + "(countryname VARCHAR(50), "
-                            + "countrycode CHAR(2) UNIQUE, "
-                            + "confirmed INT, recovered INT, "
-                            + "death INT)");
-            query.executeUpdate();
-        } catch (SQLException ex) {
-                Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
-            }
+    public static void createTable(Connection db) throws SQLException{
+        PreparedStatement query = db.prepareStatement(
+                "CREATE TABLE IF NOT EXISTS COVIDCHART "
+                        + "(countryname VARCHAR(50), "
+                        + "countrycode CHAR(2) UNIQUE, "
+                        + "confirmed INT, recovered INT, "
+                        + "death INT)");
+        query.executeUpdate();
     }
 
-    public static void insertValue(Connection db, Scaffold country){
-        try{
-            PreparedStatement query = db.prepareStatement(
-                    "INSERT INTO COVIDCHART"
-                            + "(countryname, countrycode, confirmed, recovered, death) VALUES(?, ?, ?, ?, ?) "
-                            + "ON DUPLICATE KEY UPDATE "
-                            + "confirmed = VALUES(confirmed), "
-                            + "recovered = VALUES(recovered), "
-                            + "death = VALUES(death);");
-            query.setString(1, country.countryName);
-            query.setString(2, country.countryCode);
-            query.setInt(3, country.totalConfirmed);
-            query.setInt(4, country.totalRecovered);
-            query.setInt(5, country.totalDeaths);
-            query.executeUpdate();
-        } catch (SQLException ex) {
-                Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
-            }
+    public static void insertValue(Connection db, Scaffold country) throws SQLException{
+        PreparedStatement query = db.prepareStatement(
+                "INSERT INTO COVIDCHART"
+                        + "(countryname, countrycode, confirmed, recovered, death) VALUES(?, ?, ?, ?, ?) "
+                        + "ON DUPLICATE KEY UPDATE "
+                        + "confirmed = VALUES(confirmed), "
+                        + "recovered = VALUES(recovered), "
+                        + "death = VALUES(death);");
+        query.setString(1, country.countryName);
+        query.setString(2, country.countryCode);
+        query.setInt(3, country.totalConfirmed);
+        query.setInt(4, country.totalRecovered);
+        query.setInt(5, country.totalDeaths);
+        query.executeUpdate();
     }
 
-    public static ResultSet queryCountries(Connection db){
-        try{
-            PreparedStatement query = db.prepareStatement("SELECT * from COVIDCHART;");
-            return query.executeQuery();
-        } catch (SQLException ex) {
-                Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
-                return null;
-            }
+    public static ResultSet queryCountries(Connection db) throws SQLException{
+        PreparedStatement query = db.prepareStatement("SELECT * from COVIDCHART;");
+        return query.executeQuery();
     }
 
-    public static ResultSet queryCountry(Connection db, String country){
-       try{
-            PreparedStatement query = db.prepareStatement(
-                    "SELECT countryname, confirmed, recovered, death "
-                            + "from COVIDCHART where countryname = ?;");
-            query.setString(1, country);
-            return query.executeQuery();
-        } catch (SQLException ex) {
-                Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
-                return null;
-            }
+    public static ResultSet queryCountry(Connection db, String country) throws SQLException{
+        PreparedStatement query = db.prepareStatement(
+                "SELECT countryname, confirmed, recovered, death "
+                        + "from COVIDCHART where countryname = ?;");
+        query.setString(1, country);
+        return query.executeQuery();
     }
 }
