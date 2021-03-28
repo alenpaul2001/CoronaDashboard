@@ -176,6 +176,8 @@ public class Main extends javax.swing.JFrame {
                 result.getInt("death")
             });
         }
+        // setting this here to avoid duplicate entries
+        db_table_panel.setAutoCreateRowSorter(true);
     }
 
     private void setInformation(java.awt.Color color, String message) {
@@ -907,7 +909,6 @@ public class Main extends javax.swing.JFrame {
         db_table_scrollpane.setHorizontalScrollBar(null);
         db_table_scrollpane.setPreferredSize(new java.awt.Dimension(840, 390));
 
-        db_table_panel.setAutoCreateRowSorter(true);
         db_table_panel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
         db_table_panel.setFont(new java.awt.Font("Segoe UI Semibold", 0, 18)); // NOI18N
         db_table_panel.setForeground(new java.awt.Color(255, 255, 255));
