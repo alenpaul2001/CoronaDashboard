@@ -17,10 +17,13 @@
 package com.alenpaul2001.coronadashboard;
 
 import Db.Database;
+import Http.*;
 import java.awt.Color;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -37,9 +40,35 @@ public class Main extends javax.swing.JFrame {
         initComponents();
     }
 
-    /**
-     * Hover animation to change color when mouse entered
-     */
+    // function to refresh covid statitics
+    private void refreshEntrys() {
+        java.awt.event.MouseListener mouse_listerner = home_refresh_icon.getMouseListeners()[0];
+        home_refresh_icon.removeMouseListener(mouse_listerner);
+        db_refresh_icon.removeMouseListener(mouse_listerner);
+        this.setInformation(new java.awt.Color(198, 246, 213), "fetching api...");
+        try {
+            Response res = Request.request();
+            this.setInformation(new java.awt.Color(198, 246, 213), "writing into database...");
+            res.global.countryName = "Global";
+            res.global.countryCode = "GL";
+            res.countries.add(0, res.global);
+            Database.updateCountries(res.countries);
+            this.setInformation(new java.awt.Color(198, 246, 213), "successfully refreshed data...");
+            Connection db = Database.getConnection();
+            this.loadDashboard(db);
+            this.loadTable(db);
+            Thread.sleep(1000);
+            this.setInformation(null, null);
+            home_refresh_icon.addMouseListener(mouse_listerner);
+            db_refresh_icon.addMouseListener(mouse_listerner);
+        } catch (Exception ex) {
+            this.setInformation(new java.awt.Color(254, 215, 215), ex.getMessage());
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    // Hover animation to change color when mouse entered
     public void hoverAnimation(boolean exit, java.awt.event.MouseEvent evt, java.awt.Color c) {
         javax.swing.JLabel lbl = (javax.swing.JLabel) evt.getComponent();
         javax.swing.JPanel pnl = (javax.swing.JPanel) lbl.getParent();
@@ -61,8 +90,9 @@ public class Main extends javax.swing.JFrame {
                 hoverAnimation(true, evt, null);
             }
 
-            public void mouseClicked(java.awt.event.MouseEvent evt){
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
                 System.out.println("clicked");
+                new Thread(() -> refreshEntrys()).start();
             }
         };
         home_refresh_icon.addMouseListener(refresh_adapter);
@@ -114,11 +144,20 @@ public class Main extends javax.swing.JFrame {
         }
     }
 
-    public void setInformation(java.awt.Color color, String message) {
-        home_information_panel.setBackground(color);
-        db_information_panel.setBackground(color);
-        information_text_area.setText(message);
-        db_information_text_area.setText(message);
+    private void setInformation(java.awt.Color color, String message) {
+        if (color == null) {
+            home_information_panel.setBackground(new java.awt.Color(238, 238, 237));
+            db_information_panel.setBackground(new java.awt.Color(34, 41, 57));
+            information_text_area.setText(null);
+            db_information_text_area.setText(null);
+        } else {
+            System.out.println("working");
+            home_information_panel.setBackground(color);
+            db_information_panel.setBackground(color);
+            information_text_area.setText(message);
+            db_information_text_area.setText(message);
+            home_information_panel.revalidate();
+        }
     }
 
     /**
@@ -202,7 +241,7 @@ public class Main extends javax.swing.JFrame {
         });
         getContentPane().setLayout(new java.awt.CardLayout());
 
-        dashboard_panel.setBackground(new java.awt.Color(206, 236, 250));
+        dashboard_panel.setBackground(new java.awt.Color(238, 238, 237));
         dashboard_panel.setPreferredSize(new java.awt.Dimension(940, 500));
 
         home_side_panel.setBackground(new java.awt.Color(28, 38, 61));
@@ -345,14 +384,6 @@ public class Main extends javax.swing.JFrame {
         home_refresh_icon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         home_refresh_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/baseline_refresh_white_18dp.png"))); // NOI18N
         home_refresh_icon.setPreferredSize(new java.awt.Dimension(100, 60));
-        home_refresh_icon.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                home_refresh_iconMouseExited(evt);
-            }
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                home_refresh_iconMouseEntered(evt);
-            }
-        });
 
         javax.swing.GroupLayout home_refresh_icon_areaLayout = new javax.swing.GroupLayout(home_refresh_icon_area);
         home_refresh_icon_area.setLayout(home_refresh_icon_areaLayout);
@@ -518,12 +549,12 @@ public class Main extends javax.swing.JFrame {
         home_free_panel.setBackground(new java.awt.Color(238, 238, 237));
         home_free_panel.setPreferredSize(new java.awt.Dimension(840, 280));
 
-        home_information_panel.setBackground(new java.awt.Color(198, 246, 213));
+        home_information_panel.setBackground(new java.awt.Color(238, 238, 237));
         home_information_panel.setPreferredSize(new java.awt.Dimension(840, 40));
 
+        information_text_area.setBackground(new java.awt.Color(238, 238, 237));
         information_text_area.setFont(new java.awt.Font("Segoe UI Semibold", 1, 18)); // NOI18N
         information_text_area.setForeground(new java.awt.Color(0, 0, 0));
-        information_text_area.setText("loading...");
 
         javax.swing.GroupLayout home_information_panelLayout = new javax.swing.GroupLayout(home_information_panel);
         home_information_panel.setLayout(home_information_panelLayout);
@@ -1102,7 +1133,6 @@ public class Main extends javax.swing.JFrame {
             Connection db = Database.getConnection();
             loadDashboard(db);
             loadTable(db);
-            home_information_panel.setVisible(false);
         } catch (SQLException ex) {
             this.setInformation(new java.awt.Color(254, 215, 215), "Could not connect into database");
         } catch (Exception ex) {
@@ -1139,14 +1169,6 @@ public class Main extends javax.swing.JFrame {
         settings_panel.setVisible(false);
         database_panel.setVisible(true);
     }//GEN-LAST:event_stg_database_iconMouseClicked
-
-    private void home_refresh_iconMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_home_refresh_iconMouseEntered
-        home_refresh_icon_area.setBackground(new java.awt.Color(3, 218, 198));
-    }//GEN-LAST:event_home_refresh_iconMouseEntered
-
-    private void home_refresh_iconMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_home_refresh_iconMouseExited
-        home_refresh_icon_area.setBackground(new java.awt.Color(88, 104, 220));
-    }//GEN-LAST:event_home_refresh_iconMouseExited
 
     /**
      * @param args the command line arguments
