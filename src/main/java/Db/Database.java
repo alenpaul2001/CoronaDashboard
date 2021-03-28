@@ -33,7 +33,7 @@ public class Database {
     public static Connection getConnection() throws SQLException{
             return DriverManager.getConnection(dbURI, dbUser, dbPass);
     }
-    
+
     public static void updateCountries(List<Scaffold> countries){
         try{
             Connection dbConn = getConnection();

@@ -30,9 +30,9 @@ public class Request {
     public static Response request(){
         try{
             // production url -> public-hosted slow
-            // URL url = new URL(" https://api.covid19api.com/summary");
+            URL url = new URL("https://api.covid19api.com/summary");
             // staging url -> local-hosted fast
-            URL url = new URL(" http://127.0.0.1:8000");
+            //URL url = new URL(" http://127.0.0.1:8000");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestProperty("accept", "application/json");
             InputStream responseStream = connection.getInputStream();
