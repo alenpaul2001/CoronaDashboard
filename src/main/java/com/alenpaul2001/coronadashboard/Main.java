@@ -159,6 +159,8 @@ public class Main extends javax.swing.JFrame {
         home_free_panel = new javax.swing.JPanel();
         home_information_panel = new javax.swing.JPanel();
         information_text_area = new javax.swing.JLabel();
+        home_app_name_area = new javax.swing.JPanel();
+        home_app_name = new javax.swing.JLabel();
         database_panel = new javax.swing.JPanel();
         db_side_panel = new javax.swing.JPanel();
         db_app_icon_area = new javax.swing.JPanel();
@@ -200,7 +202,7 @@ public class Main extends javax.swing.JFrame {
         });
         getContentPane().setLayout(new java.awt.CardLayout());
 
-        dashboard_panel.setBackground(new java.awt.Color(238, 238, 237));
+        dashboard_panel.setBackground(new java.awt.Color(206, 236, 250));
         dashboard_panel.setPreferredSize(new java.awt.Dimension(940, 500));
 
         home_side_panel.setBackground(new java.awt.Color(28, 38, 61));
@@ -398,7 +400,7 @@ public class Main extends javax.swing.JFrame {
         );
 
         home_recovered_main.setBackground(new java.awt.Color(198, 246, 213));
-        home_recovered_main.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
+        home_recovered_main.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(56, 161, 105), 3));
         home_recovered_main.setPreferredSize(new java.awt.Dimension(200, 150));
         home_recovered_main.setLayout(new java.awt.BorderLayout());
 
@@ -414,7 +416,7 @@ public class Main extends javax.swing.JFrame {
         home_recovered_text_area.setLayout(home_recovered_text_areaLayout);
         home_recovered_text_areaLayout.setHorizontalGroup(
             home_recovered_text_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 198, Short.MAX_VALUE)
+            .addGap(0, 194, Short.MAX_VALUE)
             .addGroup(home_recovered_text_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(home_recovered_text_areaLayout.createSequentialGroup()
                     .addGap(0, 0, Short.MAX_VALUE)
@@ -440,7 +442,7 @@ public class Main extends javax.swing.JFrame {
         home_recovered_main.add(home_text_recovered, java.awt.BorderLayout.CENTER);
 
         home_death_main.setBackground(new java.awt.Color(226, 232, 240));
-        home_death_main.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
+        home_death_main.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(113, 128, 150), 3));
         home_death_main.setPreferredSize(new java.awt.Dimension(200, 150));
         home_death_main.setLayout(new java.awt.BorderLayout());
 
@@ -456,7 +458,7 @@ public class Main extends javax.swing.JFrame {
         home_death_text_area.setLayout(home_death_text_areaLayout);
         home_death_text_areaLayout.setHorizontalGroup(
             home_death_text_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 198, Short.MAX_VALUE)
+            .addGap(0, 194, Short.MAX_VALUE)
             .addGroup(home_death_text_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(home_death_text_areaLayout.createSequentialGroup()
                     .addGap(0, 0, Short.MAX_VALUE)
@@ -482,7 +484,7 @@ public class Main extends javax.swing.JFrame {
         home_death_main.add(home_text_death, java.awt.BorderLayout.CENTER);
 
         home_confirmed_main.setBackground(new java.awt.Color(254, 215, 215));
-        home_confirmed_main.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
+        home_confirmed_main.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(229, 62, 62), 3));
         home_confirmed_main.setPreferredSize(new java.awt.Dimension(200, 150));
         home_confirmed_main.setLayout(new java.awt.BorderLayout());
 
@@ -498,7 +500,7 @@ public class Main extends javax.swing.JFrame {
         home_confirmed_text_area.setLayout(home_confirmed_text_areaLayout);
         home_confirmed_text_areaLayout.setHorizontalGroup(
             home_confirmed_text_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(confirmed_text, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE)
+            .addComponent(confirmed_text, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 194, Short.MAX_VALUE)
         );
         home_confirmed_text_areaLayout.setVerticalGroup(
             home_confirmed_text_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -537,18 +539,42 @@ public class Main extends javax.swing.JFrame {
             .addComponent(information_text_area, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
         );
 
+        home_app_name_area.setBackground(new java.awt.Color(238, 238, 237));
+        home_app_name_area.setPreferredSize(new java.awt.Dimension(400, 240));
+
+        home_app_name.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        home_app_name.setPreferredSize(new java.awt.Dimension(400, 240));
+
+        javax.swing.GroupLayout home_app_name_areaLayout = new javax.swing.GroupLayout(home_app_name_area);
+        home_app_name_area.setLayout(home_app_name_areaLayout);
+        home_app_name_areaLayout.setHorizontalGroup(
+            home_app_name_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, home_app_name_areaLayout.createSequentialGroup()
+                .addComponent(home_app_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        home_app_name_areaLayout.setVerticalGroup(
+            home_app_name_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(home_app_name_areaLayout.createSequentialGroup()
+                .addComponent(home_app_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout home_free_panelLayout = new javax.swing.GroupLayout(home_free_panel);
         home_free_panel.setLayout(home_free_panelLayout);
         home_free_panelLayout.setHorizontalGroup(
             home_free_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(home_free_panelLayout.createSequentialGroup()
-                .addComponent(home_information_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(home_free_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(home_information_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(home_app_name_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         home_free_panelLayout.setVerticalGroup(
             home_free_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, home_free_panelLayout.createSequentialGroup()
-                .addGap(0, 240, Short.MAX_VALUE)
+                .addComponent(home_app_name_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
                 .addComponent(home_information_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
@@ -1184,6 +1210,8 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JPanel home_about_icon_area;
     private javax.swing.JLabel home_app_icon;
     private javax.swing.JPanel home_app_icon_area;
+    private javax.swing.JLabel home_app_name;
+    private javax.swing.JPanel home_app_name_area;
     private javax.swing.JPanel home_confirmed_main;
     private javax.swing.JPanel home_confirmed_text_area;
     private javax.swing.JLabel home_dashboard_icon;
