@@ -18,7 +18,6 @@ package com.alenpaul2001.coronadashboard;
 
 import Db.Database;
 import Http.*;
-import java.awt.Color;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -67,8 +66,12 @@ public class Main extends javax.swing.JFrame {
             Thread.sleep(1000);
             // following codes will update both panels then sleep for 2s then hide the info panels
             Connection db = Database.getConnection();
-            this.loadDashboard(db);
-            this.loadTable(db);
+            try {
+                this.loadDashboard(db);
+                this.loadTable(db);
+            } finally {
+                db.close();
+            }
             this.setInformation(new java.awt.Color(198, 246, 213), "successfully refreshed data...", null);
             Thread.sleep(2000);
             this.setInformation(null, null, null);
@@ -151,7 +154,7 @@ public class Main extends javax.swing.JFrame {
             stg_about_icon}) {
             label.addMouseListener(new java.awt.event.MouseAdapter() {
                 public void mouseEntered(java.awt.event.MouseEvent evt) {
-                    hoverAnimation(false, evt, new Color(88, 104, 220));
+                    hoverAnimation(false, evt, new java.awt.Color(88, 104, 220));
                 }
 
                 public void mouseExited(java.awt.event.MouseEvent evt) {
@@ -1263,8 +1266,12 @@ public class Main extends javax.swing.JFrame {
         try {
             this.addMouseEvent();
             Connection db = Database.getConnection();
-            loadDashboard(db);
-            loadTable(db);
+            try {
+                loadDashboard(db);
+                loadTable(db);
+            } finally {
+                db.close();
+            }
         } catch (java.sql.SQLSyntaxErrorException ex) {
             this.setInformation(
                     new java.awt.Color(254, 215, 215),
