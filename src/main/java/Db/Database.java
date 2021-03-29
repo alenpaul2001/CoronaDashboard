@@ -92,4 +92,31 @@ public class Database {
         PreparedStatement query = db.prepareStatement("SELECT countryname from COVIDCHART;");
         return query.executeQuery();
     }
+
+    public static void createDefaultSettings(Connection db) throws SQLException {
+        PreparedStatement query = db.prepareStatement(
+                "CREATE TABLE IF NOT EXISTS COVIDSETTINGS "
+                + "(defaultcountry VARCHAR(50), "
+                + "autorefresh BOOLEAN); ");
+        query.execute();
+        query = db.prepareStatement("INSERT INTO COVIDSETTINGS VALUES (?, ?)");
+        query.setString(1, "Global");
+        query.setInt(2, 0);
+        query.executeUpdate();
+
+    }
+
+    public static ResultSet getSettings(Connection db, boolean retry) throws SQLException {
+        try {
+            PreparedStatement query = db.prepareStatement("select * from COVIDSETTINGS");
+            return query.executeQuery();
+        } catch (SQLSyntaxErrorException e) {
+            createDefaultSettings(db);
+            if (retry == false) {
+                return getSettings(db, true);
+            } else {
+                throw new SQLException("cannot create database");
+            }
+        }
+    }
 }
