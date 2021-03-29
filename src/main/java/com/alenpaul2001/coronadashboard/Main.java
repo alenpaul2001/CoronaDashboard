@@ -193,6 +193,7 @@ public class Main extends javax.swing.JFrame {
             model.addElement(result.getString(1));
         }
         home_stat_combo_box.setModel(model);
+        stg_stat_combo_box.setModel(model);
         home_stat_combo_box.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 if (evt.getStateChange() == 1) {
@@ -204,6 +205,12 @@ public class Main extends javax.swing.JFrame {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 loadModel("Global");
                 home_stat_combo_box.setSelectedIndex(0);
+            }
+        });
+
+        stg_stat_clear_button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                stg_stat_combo_box.setSelectedIndex(0);
             }
         });
     }
@@ -228,17 +235,23 @@ public class Main extends javax.swing.JFrame {
         if (color == null) {
             home_information_panel.setBackground(new java.awt.Color(238, 238, 237));
             db_information_panel.setBackground(new java.awt.Color(34, 41, 57));
+            stg_information_panel.setBackground(new java.awt.Color(27, 29, 36));
             home_information_text_area.setText(null);
             db_information_text_area.setText(null);
+            stg_information_text_area.setText(null);
             home_information_text_area.setToolTipText(null);
             db_information_text_area.setToolTipText(null);
+            stg_information_text_area.setToolTipText(null);
         } else {
             home_information_panel.setBackground(color);
             db_information_panel.setBackground(color);
+            stg_information_panel.setBackground(color);
             home_information_text_area.setText(message);
             db_information_text_area.setText(message);
+            stg_information_text_area.setText(message);
             home_information_text_area.setToolTipText(error);
             db_information_text_area.setToolTipText(error);
+            stg_information_text_area.setToolTipText(error);
         }
     }
 
@@ -317,6 +330,17 @@ public class Main extends javax.swing.JFrame {
         stg_settings_icon = new javax.swing.JLabel();
         stg_about_icon_area = new javax.swing.JPanel();
         stg_about_icon = new javax.swing.JLabel();
+        stg_options_panel = new javax.swing.JPanel();
+        stg_stat_combo_box = new javax.swing.JComboBox<>();
+        stg_combo_box_text = new javax.swing.JLabel();
+        stg_stat_clear_button = new javax.swing.JButton();
+        stg_auto_refresh_text = new javax.swing.JLabel();
+        stg_auto_refresh_checkbox = new javax.swing.JCheckBox();
+        stg_save_button = new javax.swing.JButton();
+        stg_setdefault_button = new javax.swing.JButton();
+        stg_cancel_button = new javax.swing.JButton();
+        stg_information_panel = new javax.swing.JPanel();
+        stg_information_text_area = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -1081,6 +1105,7 @@ public class Main extends javax.swing.JFrame {
 
         getContentPane().add(database_panel, "card3");
 
+        settings_panel.setBackground(new java.awt.Color(27, 29, 36));
         settings_panel.setPreferredSize(new java.awt.Dimension(940, 500));
 
         stg_side_panel.setBackground(new java.awt.Color(28, 38, 61));
@@ -1242,19 +1267,145 @@ public class Main extends javax.swing.JFrame {
                 .addGap(0, 166, Short.MAX_VALUE))
         );
 
+        stg_options_panel.setBackground(new java.awt.Color(27, 29, 36));
+        stg_options_panel.setPreferredSize(new java.awt.Dimension(352, 164));
+
+        stg_stat_combo_box.setBackground(new java.awt.Color(255, 255, 255));
+        stg_stat_combo_box.setFont(new java.awt.Font("Segoe UI Semibold", 1, 18)); // NOI18N
+        stg_stat_combo_box.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Global" }));
+        stg_stat_combo_box.setToolTipText("Choose country to see its stats");
+        stg_stat_combo_box.setPreferredSize(new java.awt.Dimension(216, 34));
+
+        stg_combo_box_text.setFont(new java.awt.Font("Segoe UI Semibold", 1, 18)); // NOI18N
+        stg_combo_box_text.setForeground(new java.awt.Color(255, 255, 255));
+        stg_combo_box_text.setText("> Default Dashboard Country : ");
+
+        stg_stat_clear_button.setFont(new java.awt.Font("Dialog", 1, 5)); // NOI18N
+        stg_stat_clear_button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/baseline_close_white_18dp.png"))); // NOI18N
+        stg_stat_clear_button.setPreferredSize(new java.awt.Dimension(34, 34));
+
+        stg_auto_refresh_text.setBackground(new java.awt.Color(255, 255, 255));
+        stg_auto_refresh_text.setFont(new java.awt.Font("Segoe UI Semibold", 1, 18)); // NOI18N
+        stg_auto_refresh_text.setForeground(new java.awt.Color(255, 255, 255));
+        stg_auto_refresh_text.setText("> Auto-Refresh API On Startup :");
+        stg_auto_refresh_text.setPreferredSize(new java.awt.Dimension(259, 25));
+
+        stg_auto_refresh_checkbox.setFont(new java.awt.Font("Segoe UI Semibold", 1, 18)); // NOI18N
+        stg_auto_refresh_checkbox.setText("yes");
+        stg_auto_refresh_checkbox.setIconTextGap(10);
+        stg_auto_refresh_checkbox.setPreferredSize(new java.awt.Dimension(75, 33));
+        stg_auto_refresh_checkbox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                stg_auto_refresh_checkboxActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout stg_options_panelLayout = new javax.swing.GroupLayout(stg_options_panel);
+        stg_options_panel.setLayout(stg_options_panelLayout);
+        stg_options_panelLayout.setHorizontalGroup(
+            stg_options_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, stg_options_panelLayout.createSequentialGroup()
+                .addContainerGap(63, Short.MAX_VALUE)
+                .addGroup(stg_options_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(stg_auto_refresh_checkbox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(stg_options_panelLayout.createSequentialGroup()
+                        .addComponent(stg_stat_combo_box, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(27, 27, 27)
+                        .addComponent(stg_stat_clear_button, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
+            .addGroup(stg_options_panelLayout.createSequentialGroup()
+                .addGroup(stg_options_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(stg_combo_box_text)
+                    .addComponent(stg_auto_refresh_text, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        stg_options_panelLayout.setVerticalGroup(
+            stg_options_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(stg_options_panelLayout.createSequentialGroup()
+                .addGap(29, 29, 29)
+                .addComponent(stg_combo_box_text)
+                .addGap(23, 23, 23)
+                .addGroup(stg_options_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(stg_stat_combo_box, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(stg_stat_clear_button, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(27, 27, 27)
+                .addComponent(stg_auto_refresh_text, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
+                .addComponent(stg_auto_refresh_checkbox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(72, 72, 72))
+        );
+
+        stg_save_button.setText("Save");
+        stg_save_button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                stg_save_buttonActionPerformed(evt);
+            }
+        });
+
+        stg_setdefault_button.setText("Cancel");
+
+        stg_cancel_button.setText("Set to Default");
+
+        stg_information_panel.setBackground(new java.awt.Color(27, 29, 36));
+        stg_information_panel.setPreferredSize(new java.awt.Dimension(840, 40));
+
+        stg_information_text_area.setBackground(new java.awt.Color(238, 238, 237));
+        stg_information_text_area.setFont(new java.awt.Font("Segoe UI Semibold", 1, 18)); // NOI18N
+        stg_information_text_area.setForeground(new java.awt.Color(255, 255, 255));
+
+        javax.swing.GroupLayout stg_information_panelLayout = new javax.swing.GroupLayout(stg_information_panel);
+        stg_information_panel.setLayout(stg_information_panelLayout);
+        stg_information_panelLayout.setHorizontalGroup(
+            stg_information_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(stg_information_panelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(stg_information_text_area, javax.swing.GroupLayout.DEFAULT_SIZE, 816, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        stg_information_panelLayout.setVerticalGroup(
+            stg_information_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(stg_information_text_area, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
+        );
+
         javax.swing.GroupLayout settings_panelLayout = new javax.swing.GroupLayout(settings_panel);
         settings_panel.setLayout(settings_panelLayout);
         settings_panelLayout.setHorizontalGroup(
             settings_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(settings_panelLayout.createSequentialGroup()
                 .addComponent(stg_side_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 840, Short.MAX_VALUE))
+                .addGroup(settings_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, settings_panelLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(stg_information_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(settings_panelLayout.createSequentialGroup()
+                        .addGap(177, 177, 177)
+                        .addComponent(stg_save_button)
+                        .addGap(106, 106, 106)
+                        .addComponent(stg_cancel_button)
+                        .addGap(115, 115, 115)
+                        .addComponent(stg_setdefault_button)
+                        .addGap(0, 0, Short.MAX_VALUE))))
+            .addGroup(settings_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(settings_panelLayout.createSequentialGroup()
+                    .addGap(128, 128, 128)
+                    .addComponent(stg_options_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(466, Short.MAX_VALUE)))
         );
         settings_panelLayout.setVerticalGroup(
-            settings_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            settings_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+            .addComponent(stg_side_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addGroup(settings_panelLayout.createSequentialGroup()
-                .addComponent(stg_side_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0))
+                .addGroup(settings_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(stg_save_button)
+                    .addComponent(stg_setdefault_button)
+                    .addComponent(stg_cancel_button))
+                .addGap(41, 41, 41)
+                .addComponent(stg_information_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(settings_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(settings_panelLayout.createSequentialGroup()
+                    .addGap(67, 67, 67)
+                    .addComponent(stg_options_panel, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(133, Short.MAX_VALUE)))
         );
 
         getContentPane().add(settings_panel, "card4");
@@ -1322,6 +1473,14 @@ public class Main extends javax.swing.JFrame {
         settings_panel.setVisible(false);
         database_panel.setVisible(true);
     }//GEN-LAST:event_stg_database_iconMouseClicked
+
+    private void stg_auto_refresh_checkboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stg_auto_refresh_checkboxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_stg_auto_refresh_checkboxActionPerformed
+
+    private void stg_save_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stg_save_buttonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_stg_save_buttonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1418,12 +1577,23 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JPanel stg_about_icon_area;
     private javax.swing.JLabel stg_app_icon;
     private javax.swing.JPanel stg_app_icon_area;
+    private javax.swing.JCheckBox stg_auto_refresh_checkbox;
+    private javax.swing.JLabel stg_auto_refresh_text;
+    private javax.swing.JButton stg_cancel_button;
+    private javax.swing.JLabel stg_combo_box_text;
     private javax.swing.JLabel stg_dashboard_icon;
     private javax.swing.JPanel stg_dashboard_icon_area;
     private javax.swing.JLabel stg_database_icon;
     private javax.swing.JPanel stg_database_icon_area;
+    private javax.swing.JPanel stg_information_panel;
+    private javax.swing.JLabel stg_information_text_area;
+    private javax.swing.JPanel stg_options_panel;
+    private javax.swing.JButton stg_save_button;
+    private javax.swing.JButton stg_setdefault_button;
     private javax.swing.JLabel stg_settings_icon;
     private javax.swing.JPanel stg_settings_icon_area;
     private javax.swing.JPanel stg_side_panel;
+    private javax.swing.JButton stg_stat_clear_button;
+    private javax.swing.JComboBox<String> stg_stat_combo_box;
     // End of variables declaration//GEN-END:variables
 }
