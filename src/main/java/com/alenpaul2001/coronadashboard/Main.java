@@ -1168,12 +1168,18 @@ public class Main extends javax.swing.JFrame {
             loadTable(db);
         } catch (java.sql.SQLSyntaxErrorException ex) {
             this.setInformation(new java.awt.Color(254, 215, 215), "Opening for the first time? consider tapping the refresh icon");
+            this.information_text_area.setToolTipText(ex.getMessage());
+            this.db_information_text_area.setToolTipText(ex.getMessage());
         }
         catch (SQLException ex) {
             this.setInformation(new java.awt.Color(254, 215, 215), "Could not connect into database");
+            this.information_text_area.setToolTipText(ex.getMessage());
+            this.db_information_text_area.setToolTipText(ex.getMessage());
         }
         catch (Exception ex) {
             this.setInformation(new java.awt.Color(254, 215, 215), ex.getMessage());
+            this.information_text_area.setToolTipText(ex.getMessage());
+            this.db_information_text_area.setToolTipText(ex.getMessage());
         }
     }//GEN-LAST:event_formWindowOpened
 
