@@ -34,29 +34,27 @@ public class Main extends javax.swing.JFrame {
      * Creates new form Main
      */
     public Main() {
-        // a = new javax.swing.ImageIcon(getClass().getRe);
         initComponents();
     }
 
     // function to refresh covid statitics
     private void refreshEntrys() {
         // first we get the already exisiting mouse listerner of both refresh icon to safe keep
-        java.awt.event.MouseListener mouse_listerner = home_refresh_icon.getMouseListeners()[0];
+        java.awt.event.MouseListener mouse_listener = home_refresh_icon.getMouseListeners()[0];
         /**
-         * then we remove both of the mouse listerner
-         * why? cause we don't want the user to spam the refresh icon
-         * in this way the user can only call the refresh function only after
-         * the previous one is finished.
+         * then we remove both of the mouse listener why? cause we don't want
+         * the user to spam the refresh icon in this way the user can only call
+         * the refresh function only after the previous one is finished.
          */
-        home_refresh_icon.removeMouseListener(mouse_listerner);
-        db_refresh_icon.removeMouseListener(mouse_listerner);
+        home_refresh_icon.removeMouseListener(mouse_listener);
+        db_refresh_icon.removeMouseListener(mouse_listener);
         // then we set fetching api message to both information panel
-        this.setInformation(new java.awt.Color(198, 246, 213), "fetching api...");
+        this.setInformation(new java.awt.Color(198, 246, 213), "fetching api...", null);
         try {
             // this function fetches the api and returns the json -> java Object version
             Response res = Request.request();
             // now we set `writing into database` message to both information panel.
-            this.setInformation(new java.awt.Color(198, 246, 213), "writing into database...");
+            this.setInformation(new java.awt.Color(198, 246, 213), "writing into database...", null);
             // expicitly add global as a country
             res.global.countryName = "Global";
             res.global.countryCode = "GL";
@@ -65,36 +63,43 @@ public class Main extends javax.swing.JFrame {
             // we update the database with new entries
             Database.updateCountries(res.countries);
             // now we set `updating components` message to both information panel.
-            this.setInformation(new java.awt.Color(198, 246, 213), "updating components...");
+            this.setInformation(new java.awt.Color(198, 246, 213), "updating components...", null);
             Thread.sleep(1000);
             // following codes will update both panels then sleep for 2s then hide the info panels
             Connection db = Database.getConnection();
             this.loadDashboard(db);
             this.loadTable(db);
-            this.setInformation(new java.awt.Color(198, 246, 213), "successfully refreshed data...");
+            this.setInformation(new java.awt.Color(198, 246, 213), "successfully refreshed data...", null);
             Thread.sleep(2000);
-            this.setInformation(null, null);
+            this.setInformation(null, null, null);
         } catch (SQLException ex) {
             // handling database related errors
-            this.setInformation(new java.awt.Color(254, 215, 215), "Failed writing to database");
-            this.information_text_area.setToolTipText(ex.getMessage());
-            this.db_information_text_area.setToolTipText(ex.getMessage());
-        } catch (java.net.UnknownHostException ex){
+            this.setInformation(
+                    new java.awt.Color(254, 215, 215),
+                    "Failed writing to database",
+                    ex.getMessage()
+            );
+        } catch (java.net.UnknownHostException ex) {
             // handling connectivity related errors.
-            this.setInformation(new java.awt.Color(254, 215, 215), "Failed connecting to internet");
-            this.information_text_area.setToolTipText(ex.getMessage());
-            this.db_information_text_area.setToolTipText(ex.getMessage());
-        }
-        catch (Exception ex) {
+            this.setInformation(
+                    new java.awt.Color(254, 215, 215),
+                    "Failed connecting to internet",
+                    ex.getMessage()
+            );
+        } catch (Exception ex) {
             // catch general errors.
-            this.setInformation(new java.awt.Color(254, 215, 215), ex.getMessage());
+            this.setInformation(
+                    new java.awt.Color(254, 215, 215),
+                    ex.getMessage(),
+                    ex.getMessage()
+            );
         } finally {
             // finnaly we change the color of refresh icon to normal
-            this.home_refresh_icon_area.setBackground(new java.awt.Color(88,104,220));
-            this.db_refresh_icon_area.setBackground(new java.awt.Color(88,104,220));
+            this.home_refresh_icon_area.setBackground(new java.awt.Color(88, 104, 220));
+            this.db_refresh_icon_area.setBackground(new java.awt.Color(88, 104, 220));
             // and add the mouse  listerner we safe keeped before.
-            home_refresh_icon.addMouseListener(mouse_listerner);
-            db_refresh_icon.addMouseListener(mouse_listerner);
+            home_refresh_icon.addMouseListener(mouse_listener);
+            db_refresh_icon.addMouseListener(mouse_listener);
         }
 
     }
@@ -156,10 +161,10 @@ public class Main extends javax.swing.JFrame {
         }
     }
 
-    public void loadModel(String countryname){
-        try{
+    public void loadModel(String countryname) {
+        try {
             Connection db = Database.getConnection();
-            try{
+            try {
                 ResultSet result = Database.queryCountry(db, countryname);
                 result.next();
                 confirmed_text.setText(String.valueOf(result.getInt("confirmed")));
@@ -168,8 +173,12 @@ public class Main extends javax.swing.JFrame {
             } finally {
                 db.close();
             }
-        } catch (SQLException ex){
-            this.setInformation(new java.awt.Color(254, 215, 215), "Could not connect into database");
+        } catch (SQLException ex) {
+            this.setInformation(
+                    new java.awt.Color(254, 215, 215),
+                    "Could not connect into database",
+                    ex.getMessage()
+            );
         }
     }
 
@@ -177,15 +186,15 @@ public class Main extends javax.swing.JFrame {
         this.loadModel("Global");
         javax.swing.DefaultComboBoxModel model = new javax.swing.DefaultComboBoxModel();
         ResultSet result = Database.queryCountryNames(db);
-        while(result.next()){
+        while (result.next()) {
             model.addElement(result.getString(1));
         }
         home_stat_combo_box.setModel(model);
         home_stat_combo_box.addItemListener(new java.awt.event.ItemListener() {
-             public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                 if (evt.getStateChange() == 1){
-                     loadModel(evt.getItem().toString());
-                 }
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                if (evt.getStateChange() == 1) {
+                    loadModel(evt.getItem().toString());
+                }
             }
         });
         home_stat_clear_button.addActionListener(new java.awt.event.ActionListener() {
@@ -212,17 +221,21 @@ public class Main extends javax.swing.JFrame {
         db_table_panel.setAutoCreateRowSorter(true);
     }
 
-    private void setInformation(java.awt.Color color, String message) {
+    private void setInformation(java.awt.Color color, String message, String error) {
         if (color == null) {
             home_information_panel.setBackground(new java.awt.Color(238, 238, 237));
             db_information_panel.setBackground(new java.awt.Color(34, 41, 57));
-            information_text_area.setText(null);
+            home_information_text_area.setText(null);
             db_information_text_area.setText(null);
+            home_information_text_area.setToolTipText(null);
+            db_information_text_area.setToolTipText(null);
         } else {
             home_information_panel.setBackground(color);
             db_information_panel.setBackground(color);
-            information_text_area.setText(message);
+            home_information_text_area.setText(message);
             db_information_text_area.setText(message);
+            home_information_text_area.setToolTipText(error);
+            db_information_text_area.setToolTipText(error);
         }
     }
 
@@ -263,7 +276,7 @@ public class Main extends javax.swing.JFrame {
         home_text_confirmed = new javax.swing.JLabel();
         home_free_panel = new javax.swing.JPanel();
         home_information_panel = new javax.swing.JPanel();
-        information_text_area = new javax.swing.JLabel();
+        home_information_text_area = new javax.swing.JLabel();
         home_app_name_area = new javax.swing.JPanel();
         home_app_name = new javax.swing.JLabel();
         home_stats_area = new javax.swing.JPanel();
@@ -347,7 +360,7 @@ public class Main extends javax.swing.JFrame {
         home_dashboard_icon.setForeground(new java.awt.Color(39, 49, 70));
         home_dashboard_icon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         home_dashboard_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons8-home-24.png"))); // NOI18N
-        home_dashboard_icon.setToolTipText("");
+        home_dashboard_icon.setToolTipText("null");
         home_dashboard_icon.setPreferredSize(new java.awt.Dimension(100, 60));
 
         javax.swing.GroupLayout home_dashboard_icon_areaLayout = new javax.swing.GroupLayout(home_dashboard_icon_area);
@@ -621,9 +634,9 @@ public class Main extends javax.swing.JFrame {
         home_information_panel.setBackground(new java.awt.Color(238, 238, 237));
         home_information_panel.setPreferredSize(new java.awt.Dimension(840, 40));
 
-        information_text_area.setBackground(new java.awt.Color(238, 238, 237));
-        information_text_area.setFont(new java.awt.Font("Segoe UI Semibold", 1, 18)); // NOI18N
-        information_text_area.setForeground(new java.awt.Color(0, 0, 0));
+        home_information_text_area.setBackground(new java.awt.Color(238, 238, 237));
+        home_information_text_area.setFont(new java.awt.Font("Segoe UI Semibold", 1, 18)); // NOI18N
+        home_information_text_area.setForeground(new java.awt.Color(0, 0, 0));
 
         javax.swing.GroupLayout home_information_panelLayout = new javax.swing.GroupLayout(home_information_panel);
         home_information_panel.setLayout(home_information_panelLayout);
@@ -631,12 +644,12 @@ public class Main extends javax.swing.JFrame {
             home_information_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(home_information_panelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(information_text_area, javax.swing.GroupLayout.DEFAULT_SIZE, 816, Short.MAX_VALUE)
+                .addComponent(home_information_text_area, javax.swing.GroupLayout.DEFAULT_SIZE, 816, Short.MAX_VALUE)
                 .addContainerGap())
         );
         home_information_panelLayout.setVerticalGroup(
             home_information_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(information_text_area, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
+            .addComponent(home_information_text_area, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
         );
 
         home_app_name_area.setPreferredSize(new java.awt.Dimension(420, 240));
@@ -1253,19 +1266,23 @@ public class Main extends javax.swing.JFrame {
             loadDashboard(db);
             loadTable(db);
         } catch (java.sql.SQLSyntaxErrorException ex) {
-            this.setInformation(new java.awt.Color(254, 215, 215), "Opening for the first time? consider tapping the refresh icon");
-            this.information_text_area.setToolTipText(ex.getMessage());
-            this.db_information_text_area.setToolTipText(ex.getMessage());
-        }
-        catch (SQLException ex) {
-            this.setInformation(new java.awt.Color(254, 215, 215), "Could not connect into database");
-            this.information_text_area.setToolTipText(ex.getMessage());
-            this.db_information_text_area.setToolTipText(ex.getMessage());
-        }
-        catch (Exception ex) {
-            this.setInformation(new java.awt.Color(254, 215, 215), ex.getMessage());
-            this.information_text_area.setToolTipText(ex.getMessage());
-            this.db_information_text_area.setToolTipText(ex.getMessage());
+            this.setInformation(
+                    new java.awt.Color(254, 215, 215),
+                    "Opening for the first time? consider tapping the refresh icon",
+                    ex.getMessage()
+            );
+        } catch (SQLException ex) {
+            this.setInformation(
+                    new java.awt.Color(254, 215, 215),
+                    "Could not connect into database",
+                    ex.getMessage()
+            );
+        } catch (Exception ex) {
+            this.setInformation(
+                    new java.awt.Color(254, 215, 215),
+                    ex.getMessage(),
+                    ex.getMessage()
+            );
         }
     }//GEN-LAST:event_formWindowOpened
 
@@ -1306,7 +1323,7 @@ public class Main extends javax.swing.JFrame {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -1373,6 +1390,7 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JPanel home_death_text_area;
     private javax.swing.JPanel home_free_panel;
     private javax.swing.JPanel home_information_panel;
+    private javax.swing.JLabel home_information_text_area;
     private javax.swing.JPanel home_recovered_main;
     private javax.swing.JPanel home_recovered_text_area;
     private javax.swing.JLabel home_refresh_icon;
@@ -1387,7 +1405,6 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JLabel home_text_confirmed;
     private javax.swing.JLabel home_text_death;
     private javax.swing.JLabel home_text_recovered;
-    private javax.swing.JLabel information_text_area;
     private javax.swing.JLabel recovered_text;
     private javax.swing.JPanel settings_panel;
     private javax.swing.JLabel stg_about_icon;
