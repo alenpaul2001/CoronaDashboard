@@ -156,12 +156,44 @@ public class Main extends javax.swing.JFrame {
         }
     }
 
+    public void loadModel(String countryname){
+        try{
+            Connection db = Database.getConnection();
+            try{
+                ResultSet result = Database.queryCountry(db, countryname);
+                result.next();
+                confirmed_text.setText(String.valueOf(result.getInt("confirmed")));
+                recovered_text.setText(String.valueOf(result.getInt("recovered")));
+                death_text.setText(String.valueOf(result.getInt("death")));
+            } finally {
+                db.close();
+            }
+        } catch (SQLException ex){
+            this.setInformation(new java.awt.Color(254, 215, 215), "Could not connect into database");
+        }
+    }
+
     public void loadDashboard(Connection db) throws SQLException {
-        ResultSet result = Database.queryCountry(db, "Global");
-        result.next();
-        confirmed_text.setText(String.valueOf(result.getInt("confirmed")));
-        recovered_text.setText(String.valueOf(result.getInt("recovered")));
-        death_text.setText(String.valueOf(result.getInt("death")));
+        this.loadModel("Global");
+        javax.swing.DefaultComboBoxModel model = new javax.swing.DefaultComboBoxModel();
+        ResultSet result = Database.queryCountryNames(db);
+        while(result.next()){
+            model.addElement(result.getString(1));
+        }
+        home_stat_combo_box.setModel(model);
+        home_stat_combo_box.addItemListener(new java.awt.event.ItemListener() {
+             public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                 if (evt.getStateChange() == 1){
+                     loadModel(evt.getItem().toString());
+                 }
+            }
+        });
+        home_stat_clear_button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loadModel("Global");
+                home_stat_combo_box.setSelectedIndex(0);
+            }
+        });
     }
 
     public void loadTable(Connection db) throws SQLException {
@@ -234,6 +266,10 @@ public class Main extends javax.swing.JFrame {
         information_text_area = new javax.swing.JLabel();
         home_app_name_area = new javax.swing.JPanel();
         home_app_name = new javax.swing.JLabel();
+        home_stats_area = new javax.swing.JPanel();
+        home_stat_combo_box = new javax.swing.JComboBox<>();
+        home_stats_area_text = new javax.swing.JLabel();
+        home_stat_clear_button = new javax.swing.JButton();
         database_panel = new javax.swing.JPanel();
         db_side_panel = new javax.swing.JPanel();
         db_app_icon_area = new javax.swing.JPanel();
@@ -580,7 +616,6 @@ public class Main extends javax.swing.JFrame {
         home_text_confirmed.setText("Confirmed");
         home_confirmed_main.add(home_text_confirmed, java.awt.BorderLayout.CENTER);
 
-        home_free_panel.setBackground(new java.awt.Color(238, 238, 237));
         home_free_panel.setPreferredSize(new java.awt.Dimension(840, 280));
 
         home_information_panel.setBackground(new java.awt.Color(238, 238, 237));
@@ -604,11 +639,12 @@ public class Main extends javax.swing.JFrame {
             .addComponent(information_text_area, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
         );
 
-        home_app_name_area.setBackground(new java.awt.Color(238, 238, 237));
-        home_app_name_area.setPreferredSize(new java.awt.Dimension(400, 240));
+        home_app_name_area.setPreferredSize(new java.awt.Dimension(420, 240));
 
+        home_app_name.setBackground(new java.awt.Color(238, 238, 237));
         home_app_name.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        home_app_name.setPreferredSize(new java.awt.Dimension(400, 240));
+        home_app_name.setOpaque(true);
+        home_app_name.setPreferredSize(new java.awt.Dimension(420, 240));
 
         javax.swing.GroupLayout home_app_name_areaLayout = new javax.swing.GroupLayout(home_app_name_area);
         home_app_name_area.setLayout(home_app_name_areaLayout);
@@ -625,20 +661,70 @@ public class Main extends javax.swing.JFrame {
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
+        home_stats_area.setBackground(new java.awt.Color(238, 238, 237));
+        home_stats_area.setPreferredSize(new java.awt.Dimension(420, 240));
+
+        home_stat_combo_box.setBackground(new java.awt.Color(255, 255, 255));
+        home_stat_combo_box.setFont(new java.awt.Font("Segoe UI Semibold", 1, 18)); // NOI18N
+        home_stat_combo_box.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Global" }));
+        home_stat_combo_box.setToolTipText("Choose country to see its stats");
+        home_stat_combo_box.setPreferredSize(new java.awt.Dimension(216, 34));
+
+        home_stats_area_text.setBackground(new java.awt.Color(238, 238, 237));
+        home_stats_area_text.setFont(new java.awt.Font("Segoe UI Semibold", 1, 30)); // NOI18N
+        home_stats_area_text.setForeground(new java.awt.Color(0, 0, 0));
+        home_stats_area_text.setText("Stats Overview  ");
+
+        home_stat_clear_button.setFont(new java.awt.Font("Dialog", 1, 5)); // NOI18N
+        home_stat_clear_button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/baseline_close_white_18dp.png"))); // NOI18N
+        home_stat_clear_button.setPreferredSize(new java.awt.Dimension(34, 34));
+
+        javax.swing.GroupLayout home_stats_areaLayout = new javax.swing.GroupLayout(home_stats_area);
+        home_stats_area.setLayout(home_stats_areaLayout);
+        home_stats_areaLayout.setHorizontalGroup(
+            home_stats_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, home_stats_areaLayout.createSequentialGroup()
+                .addGap(0, 105, Short.MAX_VALUE)
+                .addComponent(home_stat_combo_box, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(home_stat_clear_button, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(53, 53, 53))
+            .addGroup(home_stats_areaLayout.createSequentialGroup()
+                .addGap(73, 73, 73)
+                .addComponent(home_stats_area_text)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        home_stats_areaLayout.setVerticalGroup(
+            home_stats_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, home_stats_areaLayout.createSequentialGroup()
+                .addContainerGap(103, Short.MAX_VALUE)
+                .addComponent(home_stats_area_text)
+                .addGap(28, 28, 28)
+                .addGroup(home_stats_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(home_stat_combo_box, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(home_stat_clear_button, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(34, 34, 34))
+        );
+
         javax.swing.GroupLayout home_free_panelLayout = new javax.swing.GroupLayout(home_free_panel);
         home_free_panel.setLayout(home_free_panelLayout);
         home_free_panelLayout.setHorizontalGroup(
             home_free_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(home_free_panelLayout.createSequentialGroup()
-                .addGroup(home_free_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(home_free_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(home_information_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(home_app_name_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(home_free_panelLayout.createSequentialGroup()
+                        .addComponent(home_app_name_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, 0)
+                        .addComponent(home_stats_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         home_free_panelLayout.setVerticalGroup(
             home_free_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, home_free_panelLayout.createSequentialGroup()
-                .addComponent(home_app_name_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(home_free_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(home_app_name_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(home_stats_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, 0)
                 .addComponent(home_information_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -1294,6 +1380,10 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JLabel home_settings_icon;
     private javax.swing.JPanel home_settings_icon_area;
     private javax.swing.JPanel home_side_panel;
+    private javax.swing.JButton home_stat_clear_button;
+    private javax.swing.JComboBox<String> home_stat_combo_box;
+    private javax.swing.JPanel home_stats_area;
+    private javax.swing.JLabel home_stats_area_text;
     private javax.swing.JLabel home_text_confirmed;
     private javax.swing.JLabel home_text_death;
     private javax.swing.JLabel home_text_recovered;

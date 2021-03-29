@@ -19,6 +19,7 @@ package Db;
 import java.sql.*;
 import java.util.List;
 import Http.Scaffold;
+import java.util.ArrayList;
 
 /**
  *
@@ -81,6 +82,11 @@ public class Database {
                 "SELECT countryname, confirmed, recovered, death "
                         + "from COVIDCHART where countryname = ?;");
         query.setString(1, country);
+        return query.executeQuery();
+    }
+    
+    public static ResultSet queryCountryNames(Connection db) throws SQLException{
+        PreparedStatement query = db.prepareStatement("SELECT countryname from COVIDCHART;");
         return query.executeQuery();
     }
 }
