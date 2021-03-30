@@ -91,6 +91,7 @@ public class Main extends javax.swing.JFrame {
             );
         } catch (Exception ex) {
             // catch general errors.
+            System.out.println(ex.getMessage());
             this.setInformation(
                     new java.awt.Color(254, 215, 215),
                     ex.getMessage(),
@@ -409,7 +410,7 @@ public class Main extends javax.swing.JFrame {
 
         home_database_icon.setForeground(new java.awt.Color(28, 38, 61));
         home_database_icon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        home_database_icon.setIcon(new javax.swing.ImageIcon("/home/stark/Desktop/creations/piechart-30x30.png")); // NOI18N
+        home_database_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons8-pie-chart-report-35.png"))); // NOI18N
         home_database_icon.setToolTipText("");
         home_database_icon.setPreferredSize(new java.awt.Dimension(100, 60));
         home_database_icon.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -864,7 +865,7 @@ public class Main extends javax.swing.JFrame {
 
         db_database_icon.setForeground(new java.awt.Color(39, 49, 70));
         db_database_icon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        db_database_icon.setIcon(new javax.swing.ImageIcon("/home/stark/Desktop/creations/piechart-30x30.png")); // NOI18N
+        db_database_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons8-pie-chart-report-35.png"))); // NOI18N
         db_database_icon.setToolTipText("");
         db_database_icon.setPreferredSize(new java.awt.Dimension(100, 60));
 
@@ -1035,6 +1036,7 @@ public class Main extends javax.swing.JFrame {
         db_table_scrollpane.setHorizontalScrollBar(null);
         db_table_scrollpane.setPreferredSize(new java.awt.Dimension(840, 390));
 
+        db_table_panel.setBackground(new java.awt.Color(34, 41, 57));
         db_table_panel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
         db_table_panel.setFont(new java.awt.Font("Segoe UI Semibold", 0, 18)); // NOI18N
         db_table_panel.setForeground(new java.awt.Color(255, 255, 255));
@@ -1167,7 +1169,7 @@ public class Main extends javax.swing.JFrame {
 
         stg_database_icon.setForeground(new java.awt.Color(28, 38, 61));
         stg_database_icon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        stg_database_icon.setIcon(new javax.swing.ImageIcon("/home/stark/Desktop/creations/piechart-30x30.png")); // NOI18N
+        stg_database_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons8-pie-chart-report-35.png"))); // NOI18N
         stg_database_icon.setToolTipText("");
         stg_database_icon.setPreferredSize(new java.awt.Dimension(100, 60));
         stg_database_icon.addMouseListener(new java.awt.event.MouseAdapter() {
