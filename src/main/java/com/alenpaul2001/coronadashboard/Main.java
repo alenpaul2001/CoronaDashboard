@@ -21,6 +21,7 @@ import Http.*;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -67,7 +68,7 @@ public class Main extends javax.swing.JFrame {
             // following codes will update both panels then sleep for 2s then hide the info panels
             Connection db = Database.getConnection();
             try {
-                this.loadDashboard(db);
+                this.loadDashboard(db, false);
                 this.loadTable(db);
             } finally {
                 db.close();
@@ -186,13 +187,37 @@ public class Main extends javax.swing.JFrame {
         }
     }
 
-    public void loadDashboard(Connection db) throws SQLException {
-        this.loadModel("Global");
+    public void loadDashboard(Connection db, boolean autorefresh) throws SQLException {
+        ResultSet result = Database.getSettings(db, false);
+        result.next();
+        String default_country = result.getString("defaultcountry");
+        stg_auto_refresh_checkbox.setSelected(result.getBoolean("autorefresh"));
+        this.loadModel(default_country);
+        if (result.getBoolean("autorefresh") && autorefresh) {
+            new Thread(() -> {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException ex) {
+                    System.out.println("refresh failed");
+                }
+                refreshEntrys();
+            }
+            ).start();
+        }
         javax.swing.DefaultComboBoxModel model = new javax.swing.DefaultComboBoxModel();
-        ResultSet result = Database.queryCountryNames(db);
+        result = Database.queryCountryNames(db);
         while (result.next()) {
             model.addElement(result.getString(1));
         }
+        model.setSelectedItem(default_country);
+        result = Database.getIndex(db);
+        while (result.next()) {
+            total_country_placeholder.setText(String.valueOf(result.getInt(1)));
+            most_confirmed_placeholder.setText(result.getString(2));
+            most_recovered_placeholder.setText(result.getString(3));
+            most_death_placeholder.setText(result.getString(4));
+        }
+        result.close();
         home_stat_combo_box.setModel(model);
         stg_stat_combo_box.setModel(model);
         home_stat_combo_box.addItemListener(new java.awt.event.ItemListener() {
@@ -230,6 +255,50 @@ public class Main extends javax.swing.JFrame {
         }
         // setting this here to avoid duplicate entries
         db_table_panel.setAutoCreateRowSorter(true);
+    }
+
+    public void loadSettings() {
+        stg_save_button.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                try {
+                    Connection db = Database.getConnection();
+                    Database.updateSettings(
+                            String.valueOf(stg_stat_combo_box.getSelectedItem()),
+                            stg_auto_refresh_checkbox.isSelected(),
+                            db
+                    );
+                    JOptionPane.showMessageDialog(null, "Updated");
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(null, "Database Connection Failure");
+                }
+            }
+        });
+        stg_cancel_button.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                try {
+                    Connection db = Database.getConnection();
+                    ResultSet result = Database.getSettings(db, false);
+                    result.next();
+                    stg_stat_combo_box.setSelectedItem(result.getString("defaultcountry"));
+                    stg_auto_refresh_checkbox.setSelected(result.getBoolean("autorefresh"));
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(null, "Database Connection Failure");
+                }
+            }
+        });
+        stg_default_button.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                try {
+                    Connection db = Database.getConnection();
+                    Database.createDefaultSettings(db);
+                    stg_stat_combo_box.setSelectedIndex(0);
+                    stg_auto_refresh_checkbox.setSelected(false);
+                    JOptionPane.showMessageDialog(null, "Settings set to default");
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(null, "Database Connection Failure");
+                }
+            }
+        });
     }
 
     private void setInformation(java.awt.Color color, String message, String error) {
@@ -294,8 +363,18 @@ public class Main extends javax.swing.JFrame {
         home_free_panel = new javax.swing.JPanel();
         home_information_panel = new javax.swing.JPanel();
         home_information_text_area = new javax.swing.JLabel();
-        home_app_name_area = new javax.swing.JPanel();
-        home_app_name = new javax.swing.JLabel();
+        home_database_index_area = new javax.swing.JPanel();
+        database_index_text = new javax.swing.JLabel();
+        database_index_underline = new javax.swing.JSeparator();
+        total_countries_text = new javax.swing.JLabel();
+        most_confirmed_text = new javax.swing.JLabel();
+        most_deaths_text = new javax.swing.JLabel();
+        most_recovered_text = new javax.swing.JLabel();
+        total_country_placeholder = new javax.swing.JLabel();
+        most_death_placeholder = new javax.swing.JLabel();
+        most_confirmed_placeholder = new javax.swing.JLabel();
+        most_recovered_placeholder = new javax.swing.JLabel();
+        key_value_separator = new javax.swing.JSeparator();
         home_stats_area = new javax.swing.JPanel();
         home_stat_combo_box = new javax.swing.JComboBox<>();
         home_stats_area_text = new javax.swing.JLabel();
@@ -338,8 +417,8 @@ public class Main extends javax.swing.JFrame {
         stg_auto_refresh_text = new javax.swing.JLabel();
         stg_auto_refresh_checkbox = new javax.swing.JCheckBox();
         stg_save_button = new javax.swing.JButton();
-        stg_setdefault_button = new javax.swing.JButton();
         stg_cancel_button = new javax.swing.JButton();
+        stg_default_button = new javax.swing.JButton();
         stg_information_panel = new javax.swing.JPanel();
         stg_information_text_area = new javax.swing.JLabel();
 
@@ -410,7 +489,7 @@ public class Main extends javax.swing.JFrame {
 
         home_database_icon.setForeground(new java.awt.Color(28, 38, 61));
         home_database_icon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        home_database_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons8-pie-chart-report-35.png"))); // NOI18N
+        home_database_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/piechart-30x30.png"))); // NOI18N
         home_database_icon.setToolTipText("");
         home_database_icon.setPreferredSize(new java.awt.Dimension(100, 60));
         home_database_icon.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -680,30 +759,125 @@ public class Main extends javax.swing.JFrame {
             .addComponent(home_information_text_area, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
         );
 
-        home_app_name_area.setPreferredSize(new java.awt.Dimension(420, 240));
+        home_database_index_area.setBackground(new java.awt.Color(238, 238, 237));
+        home_database_index_area.setForeground(new java.awt.Color(0, 0, 0));
+        home_database_index_area.setPreferredSize(new java.awt.Dimension(440, 240));
 
-        home_app_name.setBackground(new java.awt.Color(238, 238, 237));
-        home_app_name.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        home_app_name.setOpaque(true);
-        home_app_name.setPreferredSize(new java.awt.Dimension(420, 240));
+        database_index_text.setFont(new java.awt.Font("Segoe UI Semibold", 1, 24)); // NOI18N
+        database_index_text.setForeground(new java.awt.Color(0, 0, 0));
+        database_index_text.setText("Database Index");
 
-        javax.swing.GroupLayout home_app_name_areaLayout = new javax.swing.GroupLayout(home_app_name_area);
-        home_app_name_area.setLayout(home_app_name_areaLayout);
-        home_app_name_areaLayout.setHorizontalGroup(
-            home_app_name_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, home_app_name_areaLayout.createSequentialGroup()
-                .addComponent(home_app_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+        database_index_underline.setBackground(new java.awt.Color(99, 130, 192));
+        database_index_underline.setForeground(new java.awt.Color(99, 130, 192));
+
+        total_countries_text.setFont(new java.awt.Font("Segoe UI Semibold", 1, 16)); // NOI18N
+        total_countries_text.setForeground(new java.awt.Color(88, 104, 220));
+        total_countries_text.setText("Total Countries ");
+
+        most_confirmed_text.setFont(new java.awt.Font("Segoe UI Semibold", 1, 16)); // NOI18N
+        most_confirmed_text.setForeground(new java.awt.Color(113, 128, 150));
+        most_confirmed_text.setText("Most Mortality ");
+
+        most_deaths_text.setFont(new java.awt.Font("Segoe UI Semibold", 1, 16)); // NOI18N
+        most_deaths_text.setForeground(new java.awt.Color(229, 62, 62));
+        most_deaths_text.setText("Most Confirmed ");
+
+        most_recovered_text.setFont(new java.awt.Font("Segoe UI Semibold", 1, 16)); // NOI18N
+        most_recovered_text.setForeground(new java.awt.Color(56, 161, 105));
+        most_recovered_text.setText("Most Recovered ");
+
+        total_country_placeholder.setFont(new java.awt.Font("Segoe UI Semibold", 1, 16)); // NOI18N
+        total_country_placeholder.setForeground(new java.awt.Color(0, 0, 0));
+        total_country_placeholder.setText("0");
+        total_country_placeholder.setToolTipText("");
+        total_country_placeholder.setPreferredSize(new java.awt.Dimension(200, 22));
+
+        most_death_placeholder.setFont(new java.awt.Font("Segoe UI Semibold", 1, 16)); // NOI18N
+        most_death_placeholder.setForeground(new java.awt.Color(0, 0, 0));
+        most_death_placeholder.setText("Global");
+        most_death_placeholder.setPreferredSize(new java.awt.Dimension(200, 22));
+
+        most_confirmed_placeholder.setFont(new java.awt.Font("Segoe UI Semibold", 1, 16)); // NOI18N
+        most_confirmed_placeholder.setForeground(new java.awt.Color(0, 0, 0));
+        most_confirmed_placeholder.setText("Global");
+        most_confirmed_placeholder.setPreferredSize(new java.awt.Dimension(200, 22));
+
+        most_recovered_placeholder.setFont(new java.awt.Font("Segoe UI Semibold", 1, 16)); // NOI18N
+        most_recovered_placeholder.setForeground(new java.awt.Color(0, 0, 0));
+        most_recovered_placeholder.setText("Global");
+        most_recovered_placeholder.setPreferredSize(new java.awt.Dimension(200, 22));
+
+        key_value_separator.setBackground(new java.awt.Color(99, 130, 191));
+        key_value_separator.setOrientation(javax.swing.SwingConstants.VERTICAL);
+        key_value_separator.setMinimumSize(new java.awt.Dimension(50, 2));
+        key_value_separator.setPreferredSize(new java.awt.Dimension(10, 160));
+
+        javax.swing.GroupLayout home_database_index_areaLayout = new javax.swing.GroupLayout(home_database_index_area);
+        home_database_index_area.setLayout(home_database_index_areaLayout);
+        home_database_index_areaLayout.setHorizontalGroup(
+            home_database_index_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(home_database_index_areaLayout.createSequentialGroup()
+                .addGap(66, 66, 66)
+                .addGroup(home_database_index_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(home_database_index_areaLayout.createSequentialGroup()
+                        .addGroup(home_database_index_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(database_index_underline, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(database_index_text, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 154, Short.MAX_VALUE))
+                    .addGroup(home_database_index_areaLayout.createSequentialGroup()
+                        .addGroup(home_database_index_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(most_recovered_text)
+                            .addGroup(home_database_index_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(most_deaths_text)
+                                .addComponent(most_confirmed_text, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(total_countries_text, javax.swing.GroupLayout.Alignment.LEADING)))
+                        .addGap(25, 25, 25)
+                        .addComponent(key_value_separator, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(home_database_index_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(most_confirmed_placeholder, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(most_recovered_placeholder, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(most_death_placeholder, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(home_database_index_areaLayout.createSequentialGroup()
+                                .addComponent(total_country_placeholder, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(0, 0, 0))))))
         );
-        home_app_name_areaLayout.setVerticalGroup(
-            home_app_name_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(home_app_name_areaLayout.createSequentialGroup()
-                .addComponent(home_app_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+        home_database_index_areaLayout.setVerticalGroup(
+            home_database_index_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(home_database_index_areaLayout.createSequentialGroup()
+                .addGap(31, 31, 31)
+                .addComponent(database_index_text)
+                .addGap(1, 1, 1)
+                .addComponent(database_index_underline, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(home_database_index_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(home_database_index_areaLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(total_countries_text)
+                        .addGap(18, 18, 18)
+                        .addComponent(most_confirmed_text, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(most_deaths_text)
+                        .addGap(18, 18, 18)
+                        .addComponent(most_recovered_text)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(home_database_index_areaLayout.createSequentialGroup()
+                        .addGroup(home_database_index_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(key_value_separator, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(home_database_index_areaLayout.createSequentialGroup()
+                                .addGap(3, 3, 3)
+                                .addComponent(total_country_placeholder, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(most_death_placeholder, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(most_confirmed_placeholder, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(most_recovered_placeholder, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
 
         home_stats_area.setBackground(new java.awt.Color(238, 238, 237));
-        home_stats_area.setPreferredSize(new java.awt.Dimension(420, 240));
+        home_stats_area.setPreferredSize(new java.awt.Dimension(400, 240));
 
         home_stat_combo_box.setBackground(new java.awt.Color(255, 255, 255));
         home_stat_combo_box.setFont(new java.awt.Font("Segoe UI Semibold", 1, 18)); // NOI18N
@@ -725,7 +899,7 @@ public class Main extends javax.swing.JFrame {
         home_stats_areaLayout.setHorizontalGroup(
             home_stats_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, home_stats_areaLayout.createSequentialGroup()
-                .addGap(0, 105, Short.MAX_VALUE)
+                .addGap(0, 85, Short.MAX_VALUE)
                 .addComponent(home_stat_combo_box, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(home_stat_clear_button, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -755,7 +929,7 @@ public class Main extends javax.swing.JFrame {
                 .addGroup(home_free_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(home_information_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(home_free_panelLayout.createSequentialGroup()
-                        .addComponent(home_app_name_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(home_database_index_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, 0)
                         .addComponent(home_stats_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(0, 0, Short.MAX_VALUE))
@@ -764,7 +938,7 @@ public class Main extends javax.swing.JFrame {
             home_free_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, home_free_panelLayout.createSequentialGroup()
                 .addGroup(home_free_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(home_app_name_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(home_database_index_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(home_stats_area, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, 0)
                 .addComponent(home_information_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -865,7 +1039,7 @@ public class Main extends javax.swing.JFrame {
 
         db_database_icon.setForeground(new java.awt.Color(39, 49, 70));
         db_database_icon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        db_database_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons8-pie-chart-report-35.png"))); // NOI18N
+        db_database_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/piechart-30x30.png"))); // NOI18N
         db_database_icon.setToolTipText("");
         db_database_icon.setPreferredSize(new java.awt.Dimension(100, 60));
 
@@ -1169,7 +1343,7 @@ public class Main extends javax.swing.JFrame {
 
         stg_database_icon.setForeground(new java.awt.Color(28, 38, 61));
         stg_database_icon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        stg_database_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons8-pie-chart-report-35.png"))); // NOI18N
+        stg_database_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/piechart-30x30.png"))); // NOI18N
         stg_database_icon.setToolTipText("");
         stg_database_icon.setPreferredSize(new java.awt.Dimension(100, 60));
         stg_database_icon.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -1344,9 +1518,9 @@ public class Main extends javax.swing.JFrame {
             }
         });
 
-        stg_setdefault_button.setText("Cancel");
+        stg_cancel_button.setText("Cancel");
 
-        stg_cancel_button.setText("Set to Default");
+        stg_default_button.setText("Set to Default");
 
         stg_information_panel.setBackground(new java.awt.Color(27, 29, 36));
         stg_information_panel.setPreferredSize(new java.awt.Dimension(840, 40));
@@ -1383,9 +1557,9 @@ public class Main extends javax.swing.JFrame {
                         .addGap(177, 177, 177)
                         .addComponent(stg_save_button)
                         .addGap(106, 106, 106)
-                        .addComponent(stg_cancel_button)
+                        .addComponent(stg_default_button)
                         .addGap(115, 115, 115)
-                        .addComponent(stg_setdefault_button)
+                        .addComponent(stg_cancel_button)
                         .addGap(0, 0, Short.MAX_VALUE))))
             .addGroup(settings_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(settings_panelLayout.createSequentialGroup()
@@ -1399,8 +1573,8 @@ public class Main extends javax.swing.JFrame {
             .addGroup(settings_panelLayout.createSequentialGroup()
                 .addGroup(settings_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(stg_save_button)
-                    .addComponent(stg_setdefault_button)
-                    .addComponent(stg_cancel_button))
+                    .addComponent(stg_cancel_button)
+                    .addComponent(stg_default_button))
                 .addGap(41, 41, 41)
                 .addComponent(stg_information_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(settings_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1420,8 +1594,9 @@ public class Main extends javax.swing.JFrame {
             this.addMouseEvent();
             Connection db = Database.getConnection();
             try {
-                loadDashboard(db);
+                loadDashboard(db, true);
                 loadTable(db);
+                loadSettings();
             } finally {
                 db.close();
             }
@@ -1481,7 +1656,7 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_stg_auto_refresh_checkboxActionPerformed
 
     private void stg_save_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stg_save_buttonActionPerformed
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_stg_save_buttonActionPerformed
 
     /**
@@ -1522,6 +1697,8 @@ public class Main extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel confirmed_text;
     private javax.swing.JPanel dashboard_panel;
+    private javax.swing.JLabel database_index_text;
+    private javax.swing.JSeparator database_index_underline;
     private javax.swing.JPanel database_panel;
     private javax.swing.JLabel db_about_icon;
     private javax.swing.JPanel db_about_icon_area;
@@ -1546,14 +1723,13 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JPanel home_about_icon_area;
     private javax.swing.JLabel home_app_icon;
     private javax.swing.JPanel home_app_icon_area;
-    private javax.swing.JLabel home_app_name;
-    private javax.swing.JPanel home_app_name_area;
     private javax.swing.JPanel home_confirmed_main;
     private javax.swing.JPanel home_confirmed_text_area;
     private javax.swing.JLabel home_dashboard_icon;
     private javax.swing.JPanel home_dashboard_icon_area;
     private javax.swing.JLabel home_database_icon;
     private javax.swing.JPanel home_database_icon_area;
+    private javax.swing.JPanel home_database_index_area;
     private javax.swing.JPanel home_death_main;
     private javax.swing.JPanel home_death_text_area;
     private javax.swing.JPanel home_free_panel;
@@ -1573,6 +1749,13 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JLabel home_text_confirmed;
     private javax.swing.JLabel home_text_death;
     private javax.swing.JLabel home_text_recovered;
+    private javax.swing.JSeparator key_value_separator;
+    private javax.swing.JLabel most_confirmed_placeholder;
+    private javax.swing.JLabel most_confirmed_text;
+    private javax.swing.JLabel most_death_placeholder;
+    private javax.swing.JLabel most_deaths_text;
+    private javax.swing.JLabel most_recovered_placeholder;
+    private javax.swing.JLabel most_recovered_text;
     private javax.swing.JLabel recovered_text;
     private javax.swing.JPanel settings_panel;
     private javax.swing.JLabel stg_about_icon;
@@ -1587,15 +1770,17 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JPanel stg_dashboard_icon_area;
     private javax.swing.JLabel stg_database_icon;
     private javax.swing.JPanel stg_database_icon_area;
+    private javax.swing.JButton stg_default_button;
     private javax.swing.JPanel stg_information_panel;
     private javax.swing.JLabel stg_information_text_area;
     private javax.swing.JPanel stg_options_panel;
     private javax.swing.JButton stg_save_button;
-    private javax.swing.JButton stg_setdefault_button;
     private javax.swing.JLabel stg_settings_icon;
     private javax.swing.JPanel stg_settings_icon_area;
     private javax.swing.JPanel stg_side_panel;
     private javax.swing.JButton stg_stat_clear_button;
     private javax.swing.JComboBox<String> stg_stat_combo_box;
+    private javax.swing.JLabel total_countries_text;
+    private javax.swing.JLabel total_country_placeholder;
     // End of variables declaration//GEN-END:variables
 }

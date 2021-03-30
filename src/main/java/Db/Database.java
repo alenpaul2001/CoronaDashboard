@@ -19,6 +19,8 @@ package Db;
 import Http.Scaffold;
 import java.sql.*;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -106,6 +108,15 @@ public class Database {
 
     }
 
+    public static void updateSettings(String countryname, boolean autorefresh, Connection db) throws SQLException {
+        PreparedStatement query = db.prepareStatement("UPDATE COVIDSETTINGS "
+                + "SET defaultcountry = ?, autorefresh = ?;");
+        query.setString(1, countryname);
+        query.setBoolean(2, autorefresh);
+        query.executeUpdate();
+
+    }
+
     public static ResultSet getSettings(Connection db, boolean retry) throws SQLException {
         try {
             PreparedStatement query = db.prepareStatement("select * from COVIDSETTINGS");
@@ -117,6 +128,37 @@ public class Database {
             } else {
                 throw new SQLException("cannot create database");
             }
+        }
+    }
+
+    public static int getTotalCountries(Connection db) throws SQLException {
+        PreparedStatement query = db.prepareStatement("SELECT COUNT(countryname) from COVIDCHART");
+        ResultSet result = query.executeQuery();
+        while (result.next()) {
+            return result.getInt(1);
+        }
+        return 0;
+    }
+
+    public static ResultSet getIndex(Connection db) throws SQLException {
+        PreparedStatement query = db.prepareStatement(
+                "SELECT total.COUNT, top_confirmed.countryname, top_recovered.countryname, top_deaths.countryname  from "
+                + "(SELECT COUNT(countryname) AS COUNT FROM COVIDCHART WHERE countryname <>'Global') AS total, "
+                + "(SELECT countryname FROM COVIDCHART WHERE countryname <>'Global' ORDER BY confirmed DESC LIMIT 1) AS top_confirmed, "
+                + "(SELECT countryname FROM COVIDCHART WHERE countryname <>'Global' ORDER BY recovered DESC LIMIT 1) AS top_recovered, "
+                + "(SELECT countryname FROM COVIDCHART WHERE countryname <>'Global' ORDER BY death DESC LIMIT 1) AS top_deaths;");
+        return query.executeQuery();
+    }
+
+    public static void main(String[] args) {
+        try {
+            Connection db = getConnection();
+            ResultSet result = getIndex(db);
+            updateSettings("Global", false, db);
+            result.next();
+            System.out.println(result.getInt(1));
+        } catch (SQLException ex) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }
