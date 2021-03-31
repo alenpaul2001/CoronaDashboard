@@ -244,6 +244,10 @@ public class Main extends javax.swing.JFrame {
     public void loadTable(Connection db) throws SQLException {
         ResultSet result = Database.queryCountries(db);
         DefaultTableModel model = (DefaultTableModel) db_table_panel.getModel();
+        db_table_panel.setAutoCreateRowSorter(false);
+        for (int i = model.getRowCount() - 1; i >= 0; i--) {
+            model.removeRow(i);
+        }
         while (result.next()) {
             model.addRow(new Object[]{
                 result.getString("countryname"),
@@ -394,6 +398,13 @@ public class Main extends javax.swing.JFrame {
         db_refresh_icon_area = new javax.swing.JPanel();
         db_refresh_icon = new javax.swing.JLabel();
         db_free_panel = new javax.swing.JPanel();
+        db_operator_combobox = new javax.swing.JComboBox<>();
+        db_field_combobox = new javax.swing.JComboBox<>();
+        db_filter_keyword = new javax.swing.JTextField();
+        db_filter_button = new javax.swing.JButton();
+        db_arrow_one = new javax.swing.JLabel();
+        db_arrow_two = new javax.swing.JLabel();
+        home_stat_clear_button1 = new javax.swing.JButton();
         db_information_panel = new javax.swing.JPanel();
         db_information_text_area = new javax.swing.JLabel();
         db_table_scrollpane = new javax.swing.JScrollPane();
@@ -819,11 +830,8 @@ public class Main extends javax.swing.JFrame {
             .addGroup(home_database_index_areaLayout.createSequentialGroup()
                 .addGap(66, 66, 66)
                 .addGroup(home_database_index_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(home_database_index_areaLayout.createSequentialGroup()
-                        .addGroup(home_database_index_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(database_index_underline, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(database_index_text, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 154, Short.MAX_VALUE))
+                    .addComponent(database_index_underline, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(database_index_text, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(home_database_index_areaLayout.createSequentialGroup()
                         .addGroup(home_database_index_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(most_recovered_text)
@@ -838,9 +846,8 @@ public class Main extends javax.swing.JFrame {
                             .addComponent(most_confirmed_placeholder, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(most_recovered_placeholder, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(most_death_placeholder, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(home_database_index_areaLayout.createSequentialGroup()
-                                .addComponent(total_country_placeholder, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGap(0, 0, 0))))))
+                            .addComponent(total_country_placeholder, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addGap(0, 2, Short.MAX_VALUE))
         );
         home_database_index_areaLayout.setVerticalGroup(
             home_database_index_areaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1169,15 +1176,84 @@ public class Main extends javax.swing.JFrame {
         db_free_panel.setBackground(new java.awt.Color(34, 41, 57));
         db_free_panel.setPreferredSize(new java.awt.Dimension(840, 70));
 
+        db_operator_combobox.setFont(new java.awt.Font("Segoe UI Semibold", 1, 15)); // NOI18N
+        db_operator_combobox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Lesser than", "Equals to", "Larger than" }));
+
+        db_field_combobox.setFont(new java.awt.Font("Segoe UI Semibold", 1, 15)); // NOI18N
+        db_field_combobox.setMaximumRowCount(3);
+        db_field_combobox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "confirmed", "recovered", "death" }));
+
+        db_filter_keyword.setFont(new java.awt.Font("Segoe UI Semibold", 1, 15)); // NOI18N
+        db_filter_keyword.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        db_filter_keyword.setText("0");
+        db_filter_keyword.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                db_filter_keywordActionPerformed(evt);
+            }
+        });
+
+        db_filter_button.setFont(new java.awt.Font("Segoe UI Semibold", 1, 15)); // NOI18N
+        db_filter_button.setText("Search");
+        db_filter_button.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        db_filter_button.setPreferredSize(new java.awt.Dimension(31, 38));
+        db_filter_button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                db_filter_buttonActionPerformed(evt);
+            }
+        });
+
+        db_arrow_one.setFont(new java.awt.Font("Segoe UI Semibold", 1, 15)); // NOI18N
+        db_arrow_one.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        db_arrow_one.setText("->");
+
+        db_arrow_two.setFont(new java.awt.Font("Segoe UI Semibold", 1, 15)); // NOI18N
+        db_arrow_two.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        db_arrow_two.setText("->");
+
+        home_stat_clear_button1.setFont(new java.awt.Font("Dialog", 1, 5)); // NOI18N
+        home_stat_clear_button1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/baseline_close_white_18dp.png"))); // NOI18N
+        home_stat_clear_button1.setPreferredSize(new java.awt.Dimension(38, 38));
+        home_stat_clear_button1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                home_stat_clear_button1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout db_free_panelLayout = new javax.swing.GroupLayout(db_free_panel);
         db_free_panel.setLayout(db_free_panelLayout);
         db_free_panelLayout.setHorizontalGroup(
             db_free_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 840, Short.MAX_VALUE)
+            .addGroup(db_free_panelLayout.createSequentialGroup()
+                .addGap(52, 52, 52)
+                .addComponent(db_field_combobox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(db_arrow_one, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(db_operator_combobox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(db_arrow_two, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(db_filter_keyword, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(133, 133, 133)
+                .addComponent(db_filter_button, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(home_stat_clear_button1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(26, Short.MAX_VALUE))
         );
         db_free_panelLayout.setVerticalGroup(
             db_free_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 70, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, db_free_panelLayout.createSequentialGroup()
+                .addContainerGap(19, Short.MAX_VALUE)
+                .addGroup(db_free_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(db_free_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(db_operator_combobox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(db_field_combobox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(db_filter_keyword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(db_arrow_one)
+                        .addComponent(db_arrow_two)
+                        .addComponent(db_filter_button, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(home_stat_clear_button1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
 
         db_information_panel.setBackground(new java.awt.Color(34, 41, 57));
@@ -1659,6 +1735,73 @@ public class Main extends javax.swing.JFrame {
 
     }//GEN-LAST:event_stg_save_buttonActionPerformed
 
+    private void db_filter_keywordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_db_filter_keywordActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_db_filter_keywordActionPerformed
+
+    private void db_filter_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_db_filter_buttonActionPerformed
+        try {
+            Connection db = Database.getConnection();
+            try {
+                int filter_keyword = Integer.parseInt(db_filter_keyword.getText());
+                ResultSet result = Database.filterModel(
+                        db_field_combobox.getSelectedItem().toString(),
+                        db_operator_combobox.getSelectedItem().toString(),
+                        filter_keyword,
+                        db);
+                DefaultTableModel model = (DefaultTableModel) db_table_panel.getModel();
+                // remove every row before adding new
+                for (int i = model.getRowCount() - 1; i >= 0; i--) {
+                    model.removeRow(i);
+                }
+                while (result.next()) {
+                    model.addRow(new Object[]{
+                        result.getString("countryname"),
+                        result.getString("countrycode"),
+                        result.getInt("confirmed"),
+                        result.getInt("recovered"),
+                        result.getInt("death")
+                    });
+                }
+                db_table_panel.setModel(model);
+            } finally {
+                db.close();
+            }
+        } catch (SQLException ex) {
+            this.setInformation(
+                    new java.awt.Color(254, 215, 215),
+                    "Cound not connect into database",
+                    ex.getMessage()
+            );
+        } catch (NumberFormatException ex) {
+            this.setInformation(
+                    new java.awt.Color(254, 215, 215),
+                    "Only number is allowed",
+                    ex.getMessage()
+            );
+        }
+    }//GEN-LAST:event_db_filter_buttonActionPerformed
+
+    private void home_stat_clear_button1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_home_stat_clear_button1ActionPerformed
+        db_field_combobox.setSelectedIndex(0);
+        db_operator_combobox.setSelectedIndex(0);
+        db_filter_keyword.setText("0");
+        try {
+            Connection db = Database.getConnection();
+            try {
+                this.loadTable(db);
+            } finally {
+                db.close();
+            }
+        } catch (SQLException ex) {
+            this.setInformation(
+                    new java.awt.Color(254, 215, 215),
+                    "Cound not connect into database",
+                    ex.getMessage()
+            );
+        }
+    }//GEN-LAST:event_home_stat_clear_button1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1704,13 +1847,19 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JPanel db_about_icon_area;
     private javax.swing.JLabel db_app_icon;
     private javax.swing.JPanel db_app_icon_area;
+    private javax.swing.JLabel db_arrow_one;
+    private javax.swing.JLabel db_arrow_two;
     private javax.swing.JLabel db_dashboard_icon;
     private javax.swing.JPanel db_dashboard_icon_area;
     private javax.swing.JLabel db_database_icon;
     private javax.swing.JPanel db_database_icon_area;
+    private javax.swing.JComboBox<String> db_field_combobox;
+    private javax.swing.JButton db_filter_button;
+    private javax.swing.JTextField db_filter_keyword;
     private javax.swing.JPanel db_free_panel;
     private javax.swing.JPanel db_information_panel;
     private javax.swing.JLabel db_information_text_area;
+    private javax.swing.JComboBox<String> db_operator_combobox;
     private javax.swing.JLabel db_refresh_icon;
     private javax.swing.JPanel db_refresh_icon_area;
     private javax.swing.JLabel db_settings_icon;
@@ -1743,6 +1892,7 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JPanel home_settings_icon_area;
     private javax.swing.JPanel home_side_panel;
     private javax.swing.JButton home_stat_clear_button;
+    private javax.swing.JButton home_stat_clear_button1;
     private javax.swing.JComboBox<String> home_stat_combo_box;
     private javax.swing.JPanel home_stats_area;
     private javax.swing.JLabel home_stats_area_text;

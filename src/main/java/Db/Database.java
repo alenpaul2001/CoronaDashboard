@@ -19,8 +19,6 @@ package Db;
 import Http.Scaffold;
 import java.sql.*;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -150,15 +148,28 @@ public class Database {
         return query.executeQuery();
     }
 
-    public static void main(String[] args) {
-        try {
-            Connection db = getConnection();
-            ResultSet result = getIndex(db);
-            updateSettings("Global", false, db);
-            result.next();
-            System.out.println(result.getInt(1));
-        } catch (SQLException ex) {
-            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+    public static ResultSet filterModel(
+            String field,
+            String operator,
+            int value,
+            Connection db) throws SQLException {
+        String operator_string = "";
+        if (operator.equals("Lesser than")) {
+            operator_string = "<";
+        } else if (operator.equals("Equals to")) {
+            operator_string = "=";
+        } else {
+            operator_string = ">";
         }
+        PreparedStatement query = db.prepareStatement(
+                String.format(
+                        "SELECT * FROM COVIDCHART WHERE (%s %s ?) AND (countryname <>'Global') ORDER BY %s DESC;",
+                        field,
+                        operator_string,
+                        field
+                )
+        );
+        query.setInt(1, value);
+        return query.executeQuery();
     }
 }
