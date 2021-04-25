@@ -16,6 +16,7 @@ This project provides a way to track, filter, and keep database records of repor
 3. MySql
 4. JDBC
 4. Netbeans ( Optional )
+5. Python ( Optional )
 
 
 <h2>Installation</h2>
@@ -45,6 +46,8 @@ This project provides a way to track, filter, and keep database records of repor
 1. open the project in netbeans
 2. right click and run the <code>Main.java</code> file
 
+> Note: in case of API failure, this repository included a dummy API server to emulate the behavior of the original API.
+read <a href="api/README.md">api/README.md</a> to run this so called dummy server.
 
 <h2>Project status</h2>
 Will not be maintained anymore
